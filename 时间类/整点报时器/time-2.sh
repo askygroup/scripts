@@ -1,9 +1,9 @@
 #!/bin/bash
 # 整点报时器
 
-#显示时间
 DISPLAY()
 {
+# 显示时间
 	ns=`date +%N`
 	ms=${ns:0:3}
 	time=`date +%T`

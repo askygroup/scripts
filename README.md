@@ -1,9 +1,9 @@
 # scripts
-脚本库
+脚本仓库
 
 
 
-#### 脚本存放规范
+#### 文件存放规范
 
 ##### 目录：
 
@@ -42,12 +42,18 @@
 # 编辑时间，编辑人信息等(可选)
 
 # 定义变量
-name="asky"
+var_name="value"
 
 # 函数
+function_name()
+{
+# 函数功能
 # 代码
+echo $var_name
+}
 
 # 调用函数
+function_name
 
 ```
 
@@ -64,7 +70,7 @@ name="asky"
 import sys
 
 # 定义变量
-name = "aksy"
+var_name = "value"
 
 # 类
 # 函数
