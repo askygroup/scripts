@@ -6,20 +6,20 @@ birth_date=$1
 
 TEST ()
 {
-# 判断是否输入参数，若没有提醒输入，并检查参数格式，格式正常输出出生日期年月日
-if [ $birth_date ]
-then
-	if echo $birth_date | egrep -q '\<[0-9]{8}\>'
+	# 判断是否输入参数，若没有提醒输入，并检查参数格式，格式正常输出出生日期年月日
+	if [ $birth_date ]
 	then
-		birth_date=$birth_date
+		if echo $birth_date | egrep -q '\<[0-9]{8}\>'
+		then
+			birth_date=$birth_date
+		else
+			echo -e "\n您输入的日期格式不正确，请重新尝试"
+			echo -e "\a" && exit 1
+		fi
 	else
-		echo -e "\n您输入的日期格式不正确，请重新尝试"
-		echo -e "\a" && exit 1
+		read -p "请输入您的出生日期 (例如: 19950817) : " birth_date
+		TEST
 	fi
-else
-	read -p "请输入您的出生日期 (例如: 19950817) : " birth_date
-	TEST
-fi
 }
 
 TEST

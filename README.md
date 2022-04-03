@@ -46,7 +46,7 @@
 ​	1、Shell脚本模板，*.sh
 
 ```sh
-#！/bin/bash
+#!/usr/bin/env bash
 # 脚本功能介绍
 # 依赖信息(可选)
 # 编辑时间，编辑人信息等(可选)
@@ -57,9 +57,9 @@ var_name="value"
 # 函数
 function_name()
 {
-# 函数功能
-# 代码
-echo $var_name
+    # 函数功能
+    # 代码
+    echo $var_name
 }
 
 # 调用函数
@@ -70,7 +70,7 @@ function_name
 ​	2、Python脚本模板，*.py
 
 ```python
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 # 脚本功能介绍
 # 依赖信息(可选)
@@ -82,11 +82,19 @@ import sys
 # 定义变量
 var_name = "value"
 
+
 # 类
-# 函数
-# 代码
+    # 类功能
+	
+	# 函数
+    function_name():
+    	# 函数功能
+        # 代码
+        print(var_name)
+
 
 # 调用类、函数
+
 
 ```
 

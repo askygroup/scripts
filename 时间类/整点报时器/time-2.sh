@@ -3,7 +3,7 @@
 
 DISPLAY()
 {
-# 显示时间
+	# 显示时间
 	ns=`date +%N`
 	ms=${ns:0:3}
 	time=`date +%T`

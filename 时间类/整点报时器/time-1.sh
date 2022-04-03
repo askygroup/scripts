@@ -3,7 +3,7 @@
 
 DISPLAY()
 {
-# 显示时间
+	# 显示时间
 	time=`date +%T`
 	s=${time:6:2}
 	m=${time:3:2}
