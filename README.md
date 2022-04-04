@@ -55,6 +55,7 @@
 var_name="value"
 
 # 函数
+# function function_name()
 function_name()
 {
     # 函数功能
@@ -84,17 +85,26 @@ var_name = "value"
 
 
 # 类
-    # 类功能
-	
-	# 函数
-    function_name():
-    	# 函数功能
-        # 代码
-        print(var_name)
+class ClassName:
+	# 类功能
+	def __init__(self, var):
+		self.var = var
+		print(self.var)
 
 
-# 调用类、函数
+# 调用类
+ClassName(var_name)
 
+
+# 函数
+def function_name(var):
+	# 函数功能
+	# 代码
+	print(var)
+
+
+# 调用函数
+function_name(var_name)
 
 ```
 
