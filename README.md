@@ -52,8 +52,8 @@
 # 依赖信息(可选)
 # 编辑时间，编辑人信息等(可选)
 
-# 定义变量
-var_name="value"
+# 定义变量(variable)
+var_name="var_value"
 
 # 函数
 # function function_name()
@@ -82,7 +82,7 @@ function_name
 import sys
 
 # 定义变量
-var_name = "value"
+var_name = "var_value"
 
 
 # 类
