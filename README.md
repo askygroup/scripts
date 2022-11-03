@@ -60,7 +60,7 @@
 ##### 模板文件：
 
 详见：
-[:link: 模板文件](https://github.com/askygroup/scripts/tree/master/template "脚本相关模板文件")
+[:link: 模板文件](https://github.com/askygroup/scripts/tree/master/template_file "脚本相关模板文件")
 
 
 ---
