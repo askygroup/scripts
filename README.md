@@ -11,8 +11,8 @@
 |---|---|:---:|:---:|
 |:loudspeaker: 状态说明：|||:no_entry: :bug: :x: :o: :heavy_check_mark:|
 |:pushpin:||||
-|template_file|---|模板文件|:heavy_check_mark:|
-|test|---|测试文件|:bug:|
+|[template_file]|---|模板文件|:heavy_check_mark:|
+|[test]|---|测试文件|:bug:|
 |||||
 |:pushpin:||||
 |date_and_time|[timer]|计时器|:heavy_check_mark:|
@@ -25,17 +25,15 @@
 |[what_to_eat]|---|吃啥|施工中 :no_entry:|
 |||||
 
-[timer]: https://github.com/askygroup/scripts/tree/master/date_and_time/timer
-[report_time]: https://github.com/askygroup/scripts/tree/master/date_and_time/report_time
-[countdown]: https://github.com/askygroup/scripts/tree/master/date_and_time/countdown
-[date_count]: https://github.com/askygroup/scripts/tree/master/date_and_time/date_count
-[birthday_count]: https://github.com/askygroup/scripts/tree/master/date_and_time/birthday_count
-[multi_tasking]: https://github.com/askygroup/scripts/tree/master/multi_tasking
-[what_to_eat]: https://github.com/askygroup/scripts/tree/master/what_to_eat
-
-[a]
-
-[a]: ./date_and_time/
+[template_file]:template_file
+[test]:test
+[timer]: date_and_time/timer
+[report_time]: date_and_time/report_time
+[countdown]: date_and_time/countdown
+[date_count]: date_and_time/date_count
+[birthday_count]: date_and_time/birthday_count
+[multi_tasking]: multi_tasking
+[what_to_eat]: what_to_eat
 
 
 ---
