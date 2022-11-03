@@ -25,15 +25,15 @@
 |[what_to_eat]|---|吃啥|施工中 :no_entry:|
 |||||
 
-[template_file]:template_file
-[test]:test
-[timer]: date_and_time/timer
-[report_time]: date_and_time/report_time
-[countdown]: date_and_time/countdown
-[date_count]: date_and_time/date_count
-[birthday_count]: date_and_time/birthday_count
-[multi_tasking]: multi_tasking
-[what_to_eat]: what_to_eat
+[template_file]: ./template_file
+[test]: ./test
+[timer]: ./date_and_time/timer
+[report_time]: ./date_and_time/report_time
+[countdown]: ./date_and_time/countdown
+[date_count]: ./date_and_time/date_count
+[birthday_count]: ./date_and_time/birthday_count
+[multi_tasking]: ./multi_tasking
+[what_to_eat]: ./what_to_eat
 
 
 ---
