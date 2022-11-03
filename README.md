@@ -15,15 +15,27 @@
 |test|---|测试文件|:bug:|
 |||||
 |:pushpin:||||
-|date_and_time|timer|计时器|:heavy_check_mark:|
-|date_and_time|report_time|整点报时器|:heavy_check_mark:|
-|date_and_time|countdown|倒计时|:x:|
-|date_and_time|date_count|日期相关计算|:x:|
-|date_and_time|birthday_count|生日相关计算|:heavy_check_mark:|
+|date_and_time|[timer]|计时器|:heavy_check_mark:|
+|date_and_time|[report_time]|整点报时器|:heavy_check_mark:|
+|date_and_time|[countdown]|倒计时|:x:|
+|date_and_time|[date_count]|日期相关计算|:x:|
+|date_and_time|[birthday_count]|生日相关计算|:heavy_check_mark:|
 |:pushpin:||||
-|multi_tasking|---|多任务（多进程多线程）|施工中 :no_entry:|
-|what_to_eat|---|吃啥|施工中 :no_entry:|
+|[multi_tasking]|---|多任务（多进程多线程）|施工中 :no_entry:|
+|[what_to_eat]|---|吃啥|施工中 :no_entry:|
 |||||
+
+[timer]: https://github.com/askygroup/scripts/tree/master/date_and_time/timer
+[report_time]: https://github.com/askygroup/scripts/tree/master/date_and_time/report_time
+[countdown]: https://github.com/askygroup/scripts/tree/master/date_and_time/countdown
+[date_count]: https://github.com/askygroup/scripts/tree/master/date_and_time/date_count
+[birthday_count]: https://github.com/askygroup/scripts/tree/master/date_and_time/birthday_count
+[multi_tasking]: https://github.com/askygroup/scripts/tree/master/multi_tasking
+[what_to_eat]: https://github.com/askygroup/scripts/tree/master/what_to_eat
+
+[a]
+
+[a]: ./date_and_time/
 
 
 ---
