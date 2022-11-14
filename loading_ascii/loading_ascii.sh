@@ -3,7 +3,7 @@
 
 cd `dirname $0`  # 切换到脚本所在目录
 
-logo=$1  # 需要加载的 ASCII 艺术字文件
+logo=files/$1  # 需要加载的 ASCII 艺术字文件
 wait_time=0.1  # 加载每行的等待时间
 
 if [ $logo ] && [ -f $logo ]; then

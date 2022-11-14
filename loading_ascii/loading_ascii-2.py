@@ -10,7 +10,7 @@ import time
 script_dir = sys.path[0]  # 脚本所在目录
 os.chdir(script_dir)  # 切换到脚本所在目录
 
-logo = sys.argv[1] if len(sys.argv) > 1 else None  # 需要加载的 ASCII 艺术字文件
+logo = f'files/{sys.argv[1]}' if len(sys.argv) > 1 else None  # 需要加载的 ASCII 艺术字文件
 all_wait_time = 1  # 加载的总等待时间
 
 if logo:
