@@ -31,7 +31,7 @@
 ##### 网站一：
 http://patorjk.com/software/taag/
 
-bulbhead 灯头状的
+bulbhead（灯头状的）
 Big
 Alpha
 Doh
@@ -40,10 +40,10 @@ Doh
 英文转ASCII艺术字：https://www.bootschool.net/ascii
 
 3d
-bloody 血淋淋的
-speed 速度感的
+bloody（血淋淋的）
+speed（速度感的）
 mini
-short 短的
+short（短的）
 
 中文转ASCII艺术字：https://www.bootschool.net/chinese-to-ascii
 
