@@ -23,6 +23,7 @@
 |:pushpin:||||
 |[multi_tasking]|---|多任务（多进程多线程）|施工中 :no_entry:|
 |[what_to_eat]|---|吃啥|施工中 :no_entry:|
+|[loading_ascii]|---|逐行加载 ASCII 艺术字文件|:heavy_check_mark:|
 |||||
 
 [template_file]: ./template_file
@@ -34,6 +35,7 @@
 [birthday_count]: ./date_and_time/birthday_count
 [multi_tasking]: ./multi_tasking
 [what_to_eat]: ./what_to_eat
+[loading_ascii]: ./loading_ascii
 
 
 ---
