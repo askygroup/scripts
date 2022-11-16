@@ -9,7 +9,7 @@
 
 |功能|脚本|描述|状态|
 |---|---|:---:|:---:|
-|:loudspeaker: 状态说明：|||:no_entry: :bug: :x: :o: :heavy_check_mark:|
+|:loudspeaker: 状态说明：|||:no_entry: :x: :heavy_check_mark:|
 |:pushpin:||||
 |[template_file]|---|模板文件|:heavy_check_mark:|
 |[test]|---|测试文件|:bug:|
@@ -18,7 +18,7 @@
 |date_and_time|[timer]|计时器|:heavy_check_mark:|
 |date_and_time|[report_time]|整点报时器|:heavy_check_mark:|
 |date_and_time|[countdown]|倒计时|:x:|
-|date_and_time|[date_count]|日期相关计算|:x:|
+|date_and_time|[date_count]|日期相关计算|:heavy_check_mark:|
 |date_and_time|[birthday_count]|生日相关计算|:heavy_check_mark:|
 |:pushpin:||||
 |[multi_tasking]|---|多任务（多进程多线程）|施工中 :no_entry:|

@@ -52,9 +52,9 @@ else
 fi
 
 # 结束日期大于开始日期检测
-if [ $date1 -ge $date2 ]
+if [ $date1 -gt $date2 ]
 then
-	echo -e "\n您输入的开始日期大于等于结束日期，请重新尝试\n"
+	echo -e "\n您输入的开始日期大于结束日期，请重新尝试\n"
 	echo -e "\a" && exit 1
 fi
 }
@@ -138,7 +138,6 @@ then
 	if echo $date1 | egrep -q '\<[0-9]{8}\>'
 	then
 		TRUE1
-		TEST2
 	# 开始日期格式不正确，提醒重新输入
 	else
 		echo -e "\n您输入的开始日期格式不正确，请重新输入 (例如: 19950817)\n"
@@ -175,4 +174,5 @@ echo -e "\n开始、结束日期之间的天数是: $date_day天\n"
 }
 
 TEST1
+TEST2
 HANDLE

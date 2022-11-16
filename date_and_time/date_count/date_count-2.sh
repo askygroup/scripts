@@ -15,9 +15,9 @@ then
 	then
 		date2=$date2
 		# 结束日期大于开始日期检测
-		if [ $date1 -ge $date2 ]
+		if [ $date1 -gt $date2 ]
 		then
-			echo -e "\n您输入的开始日期大于等于结束日期，请重新尝试\n"
+			echo -e "\n您输入的开始日期大于结束日期，请重新尝试\n"
 			echo -e "\a" && exit 1
 		fi
 	# 结束日期格式不正确，提醒重新输入
