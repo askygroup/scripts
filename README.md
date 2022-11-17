@@ -11,18 +11,18 @@
 |---|---|:---:|:---:|
 |:loudspeaker: 状态说明：|||:no_entry: :x: :heavy_check_mark:|
 |:pushpin:||||
-|[template_file]|---|模板文件|:heavy_check_mark:|
+|[template_file]|---|模板文件|:o:|
 |[test]|---|测试文件|:bug:|
 |||||
 |:pushpin:||||
 |date_and_time|[timer]|计时器|:heavy_check_mark:|
 |date_and_time|[report_time]|整点报时器|:heavy_check_mark:|
-|date_and_time|[countdown]|倒计时|:x:|
+|date_and_time|[count_down]|倒计时|:heavy_check_mark:|
 |date_and_time|[date_count]|日期相关计算|:heavy_check_mark:|
 |date_and_time|[birthday_count]|生日相关计算|:heavy_check_mark:|
 |:pushpin:||||
 |[multi_tasking]|---|多任务（多进程多线程）|施工中 :no_entry:|
-|[what_to_eat]|---|吃啥|施工中 :no_entry:|
+|[what_to_eat]|---|吃啥|:x:|
 |[loading_ascii]|---|逐行加载 ASCII 艺术字文件|:heavy_check_mark:|
 |||||
 
@@ -30,7 +30,7 @@
 [test]: ./test
 [timer]: ./date_and_time/timer
 [report_time]: ./date_and_time/report_time
-[countdown]: ./date_and_time/countdown
+[count_down]: ./date_and_time/count_down
 [date_count]: ./date_and_time/date_count
 [birthday_count]: ./date_and_time/birthday_count
 [multi_tasking]: ./multi_tasking

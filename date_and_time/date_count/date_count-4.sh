@@ -9,11 +9,10 @@ date2=$2
 TABLE ()
 {
 cache_date=`date -d $2 +%Y%m%d 2> /dev/null`  # 丢弃错误输出，将标准输出赋值给变量
-return_code=$?
-if [ $return_code -eq 0 ] && [ $1 == 'date1' ]
+if [ $cache_date ] && [ $1 == 'date1' ]
 then
 	date1=$cache_date
-elif [ $return_code -eq 0 ] && [ $1 == 'date2' ]
+elif [ $cache_date ] && [ $1 == 'date2' ]
 then
 	date2=$cache_date
 # 补全失败重新输入
