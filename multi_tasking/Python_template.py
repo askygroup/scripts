@@ -10,9 +10,7 @@ from pathlib import Path
 
 # 切换到脚本所在目录
 script_dir = sys.path[0]  # 脚本所在目录
+print(f'{script_dir=}')
 os.chdir(script_dir)  # 切换到脚本所在目录
 current_dir = Path.cwd()  # 当前所在目录
-
-if __name__ == '__main__':
-	print(f'{script_dir=}')
-	print(f'{current_dir=}')
+print(f'{current_dir=}')
