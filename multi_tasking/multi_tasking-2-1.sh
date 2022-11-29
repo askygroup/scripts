@@ -9,17 +9,17 @@ TASK()
 	# 总任务数
 	task=10
 	# 任务需要执行的次数
-	time=$(($task/$thread))
+	task_time=$(($task/$thread))
 	remainder=$(($task%$thread))
-	# echo $time $remainder
+	# echo $task_time $remainder
 	# 如果有余数，执行次数加一
 	if [ $remainder -gt 0 ]
 	then
-		let time++
+		let task_time++
 	fi
 
 	start_task=1  # 起始任务
-	for ((t=0; t<time; t++))
+	for ((t=0; t<task_time; t++))
 	do
 		end_task=$(($start_task+$thread-1))  # 结束任务
 		# 判断结束任务是否大于于总任务数，大于则结束任务等于总任务数

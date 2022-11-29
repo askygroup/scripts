@@ -21,9 +21,10 @@
 |date_and_time|[date_count]|日期相关计算|:heavy_check_mark:|
 |date_and_time|[birthday_count]|生日相关计算|:heavy_check_mark:|
 |:pushpin:||||
-|[multi_tasking]|---|多任务（多进程多线程）|施工中 :no_entry:|
+|[multi_tasking]|---|多任务（多进程多线程）|:heavy_check_mark:|
 |[what_to_eat]|---|吃啥|:x:|
 |[loading_ascii]|---|逐行加载 ASCII 艺术字文件|:heavy_check_mark:|
+||||施工中 :no_entry:|
 |||||
 
 [template_file]: ./template_file

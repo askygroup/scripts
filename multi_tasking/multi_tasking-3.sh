@@ -10,14 +10,14 @@ ACTION()
 
 TASK()
 {
-	# 新建一个fifo类型的管道文件（类似一个消息队列）（$$ 为当前进程的PID）
+	# 新建一个FIFO类型的（有名管道）文件（类似一个消息队列）（$$ 为当前进程的PID）
 	tmp_fifofile="$$.fifo"
 	mkfifo $tmp_fifofile
 	# 以读写模式（<>）操作管道文件
 	# 系统调用 exec 是以新的进程去替代原来的进程，进程的PID保持不变，本质上是调用进程内部执行一个可执行文件
 	# 6为文件描述符，这个数字除了0、1、2之外的所有未声明过的字符
 	exec 6<> $tmp_fifofile
-	rm $tmp_fifofile  # 删除创建的管道文件
+	rm $tmp_fifofile  # 删除临时创建的管道文件
 
 	# 并发的最大进程数
 	thread=3
