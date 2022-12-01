@@ -24,6 +24,7 @@
 |[multi_tasking]|---|多任务（多进程多线程）|:heavy_check_mark:|
 |[what_to_eat]|---|吃啥|:x:|
 |[loading_ascii]|---|逐行加载 ASCII 艺术字文件|:heavy_check_mark:|
+|[query_ip_geolocation]|---|查询IP属地信息|:heavy_check_mark:|
 ||||施工中 :no_entry:|
 |||||
 
@@ -37,6 +38,7 @@
 [multi_tasking]: ./multi_tasking
 [what_to_eat]: ./what_to_eat
 [loading_ascii]: ./loading_ascii
+[query_ip_geolocation]: ./query_ip_geolocation
 
 
 ---
