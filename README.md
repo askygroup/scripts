@@ -25,7 +25,8 @@
 |[what_to_eat]|---|吃啥|:x:|
 |[loading_ascii]|---|逐行加载 ASCII 艺术字文件|:heavy_check_mark:|
 |[query_ip_geolocation]|---|查询IP属地信息|:heavy_check_mark:|
-|[nginx_log_cut]|---|nginx日志切割脚本|:heavy_check_mark:|
+|[nginx_log_cut]|---|nginx日志切割|:heavy_check_mark:|
+|[iowait_jstack]|---|iowait告警自动打堆栈|:heavy_check_mark:|
 ||||施工中 :no_entry:|
 |||||
 
@@ -41,7 +42,7 @@
 [loading_ascii]: ./loading_ascii
 [query_ip_geolocation]: ./query_ip_geolocation
 [nginx_log_cut]: ./nginx_log_cut
-
+[iowait_jstack]: ./iowait_jstack
 
 ---
 

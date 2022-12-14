@@ -1,5 +1,5 @@
-# nginx日志切割脚本
-nginx日志切割脚本
+# nginx日志切割
+nginx日志切割
 
 
 ---
@@ -11,8 +11,8 @@ nginx日志切割脚本
 
 |脚本迭代版本|描述|
 |---|---|
-|nginx_log_cut-1.sh|nginx日志切割脚本，可以按日或者按小时切割|
-|nginx_log_cut-2.sh|nginx日志切割脚本，可以按日或者按小时切割，代码优化|
+|nginx_log_cut-1.sh|nginx日志切割，可以按日或者按小时切割|
+|nginx_log_cut-2.sh|nginx日志切割，可以按日或者按小时切割，代码优化|
 |||
 
 
@@ -25,12 +25,15 @@ nginx日志切割脚本
 
 按日切割：
 
+```sh
 0 1 * * * /bin/bash /home/nginx/cut_hour.sh >> /home/nginx/cut_hour.log &> /dev/null
+```
 
 按小时切割：
 
+```sh
 10 * * * * /bin/bash /home/nginx/cut_hour.sh >> /home/nginx/cut_hour.log &> /dev/null
-
+```
 
 ---
 
