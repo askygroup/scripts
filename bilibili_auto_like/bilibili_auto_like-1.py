@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 # _*_ coding: UTF-8 _*_
 
+import os
+import sys
 import datetime
 import time
 import re
 import pyautogui
 import pyperclip
-import sys
 
 
 def write(text):
@@ -142,11 +143,11 @@ def send_bullet_screen(bullet_screen):
     bullet_screen_box_image = f'images/bullet_screen_box.png'  # 弹幕栏
     bullet_screen_box_location = pyautogui.locateCenterOnScreen(bullet_screen_box_image, confidence=0.85, minSearchTime=2)
     if bullet_screen_box_location:
-        print('输入弹幕')
+        print(f'输入弹幕 【{bullet_screen}】')
         pyautogui.moveTo(bullet_screen_box_location, duration=0.5)
         pyautogui.click()
         write(bullet_screen)  # 输入
-        print(f'弹幕输入成功 【{bullet_screen}】')
+        print('弹幕输入成功')
     else:
         print('未找到弹幕输入框 【{bullet_screen_box_image}】')
         exit(1)
@@ -155,14 +156,14 @@ def send_bullet_screen(bullet_screen):
     send_bullet_screen_image = 'images/send_bullet_screen.png'
     send_bullet_screen_location = pyautogui.locateCenterOnScreen(send_bullet_screen_image, confidence=0.85, minSearchTime=2)
     if send_bullet_screen_location:
-        print('发送弹幕')
+        print(f'发送弹幕 【{bullet_screen}】')
         pyautogui.moveTo(send_bullet_screen_location, duration=0.5)
         pyautogui.click()
-        print(f'弹幕发送成功 【{bullet_screen}】')
+        print('弹幕发送成功')
     else:
-        print('发送弹幕')
+        print(f'发送弹幕 【{bullet_screen}】')
         pyautogui.press('enter')  # 未找到发布按钮，使用回车键发送
-        print(f'弹幕发送成功 【{bullet_screen}】')
+        print('弹幕发送成功')
 
 
 def send_comment(comment):
@@ -179,11 +180,11 @@ def send_comment(comment):
     comment_box_image = f'images/comment_box.png'  # 评论框
     comment_box_location = pyautogui.locateCenterOnScreen(comment_box_image, confidence=0.85, minSearchTime=2)
     if comment_box_location:
-        print('输入评论')
+        print(f'输入评论 【{comment}】')
         pyautogui.moveTo(comment_box_location, duration=0.5)
         pyautogui.click()
         write(comment)  # 输入
-        print(f'评论输入成功 【{comment}】')
+        print('评论输入成功')
     else:
         print('未找到评论输入框 【{comment_box_image}】')
         exit(1)
@@ -192,14 +193,14 @@ def send_comment(comment):
     send_comment_image = 'images/send_comment.png'
     send_comment_location = pyautogui.locateCenterOnScreen(send_comment_image, confidence=0.85, minSearchTime=2)
     if send_comment_location:
-        print('发布评论')
+        print(f'发布评论 【{comment}】')
         pyautogui.moveTo(send_comment_location, duration=0.5)
         pyautogui.click()
-        print(f'评论发布成功 【{comment}】')
+        print('评论发布成功')
     else:
-        print('发布评论')
+        print(f'发布评论 【{comment}】')
         pyautogui.press('enter')  # 未找到发布按钮，使用回车键发布
-        print(f'评论发布成功 【{comment}】')
+        print('评论发布成功')
 
     # 评论按最新排序
     newest_comment_image = f'images/newest_comment.png'
@@ -281,13 +282,24 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.setrecursionlimit(5000)  # 设置解释器的递归调用深度限制
-    print(f'递归限制值：{sys.getrecursionlimit()}')
+    # 程序开始时间
+    start_time = datetime.datetime.now().timestamp()
+    print(f"开始时间：{datetime.datetime.today().strftime('%F %T')}")
+
+    # 切换到脚本所在目录
+    script_dir = sys.path[0]  # 脚本所在目录
+    os.chdir(script_dir)  # 切换到脚本所在目录
+
+    sys.setrecursionlimit(2000)  # 设置解释器的递归调用深度限制
+    print(f'递归限制已调整为：{sys.getrecursionlimit()}\n')
 
     # 点赞次数和鼠标光标位置
     like_count = 0
     mouse_location_cache = (0, 0)  # 增加纪录鼠标当前光标位置，防止出现部分点赞按钮在页面底部无法点击的问题
 
-    print("开始时间：{}\n".format(datetime.datetime.today().strftime("%F %T")), flush=True)
     main()
-    print("\n结束时间：{}".format(datetime.datetime.today().strftime("%F %T")), flush=True)
+
+    # 程序结束时间
+    run_time = int(datetime.datetime.now().timestamp() - start_time)
+    print(f'\n共耗时 {run_time} 秒', flush=True)
+    print(f"结束时间：{datetime.datetime.today().strftime('%F %T')}\n")
