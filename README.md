@@ -27,6 +27,7 @@
 |[query_ip_geolocation]|---|查询IP属地信息|:heavy_check_mark:|
 |[nginx_log_cut]|---|nginx日志切割|:heavy_check_mark:|
 |[iowait_jstack]|---|iowait告警自动打堆栈|:heavy_check_mark:|
+|[bilibili_auto_like]|---|自动给B站的视频评论点赞|:x:|
 ||||施工中 :no_entry:|
 |||||
 
@@ -43,6 +44,8 @@
 [query_ip_geolocation]: ./query_ip_geolocation
 [nginx_log_cut]: ./nginx_log_cut
 [iowait_jstack]: ./iowait_jstack
+[bilibili_auto_like]: ./bilibili_auto_like
+
 
 ---
 

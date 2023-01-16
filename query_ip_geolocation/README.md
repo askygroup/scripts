@@ -14,7 +14,6 @@
 |query_ip_geolocation-1.py|查询单个IP（IPV4 地址、IPV6 地址）属地信息，多途径查询|
 |||
 
-
 ##### nginx_query_ip_geolocation.py
 
 |脚本迭代版本|描述|
@@ -37,8 +36,8 @@
 |all_ip.list|IP属地信息表|
 |all_ip.json|IP属地信息表，历史查询本地缓存文件|
 |---|---|
-|./files/nginx_ip.*.list|IP地址信息|
-|./files/nginx_ip.*.txt|IP地址和属地信息|
+|./files/nginx_ip*.list|IP地址信息|
+|./files/nginx_ip*.txt|IP地址和属地信息|
 |---|---|
 |./files/test_ip.list|IP地址信息，测试数据|
 |./files/test_ip.txt|IP地址和属地信息，测试数据|
@@ -47,6 +46,8 @@
 |./files/test_ip-使用API多线程查询.txt|IP地址和属地信息，测试数据|
 |---|---|
 |./files/overseas_ip-*.list|当天境外IP的top30数据|
+|||
+
 
 ---
 
