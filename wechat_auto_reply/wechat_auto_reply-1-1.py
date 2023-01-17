@@ -39,9 +39,10 @@ def open_wechat():
     if wechat_window_location:
         print('微信已打开')
     else:
+        # 搜索微信应用
         # pyautogui.hotkey('win', 'q')  # 打开"Windows 搜索"菜单
         pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
-        # 搜索微信应用
+        time.sleep(1)
         print(f'搜索微信应用')
         # write('微信')
         write('wechat')
@@ -50,7 +51,7 @@ def open_wechat():
         if wechat_location:
             print('打开微信')
             pyautogui.moveTo(wechat_location, duration=0.5)
-            pyautogui.click(clicks=2)
+            pyautogui.click(clicks=1)
             wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
             if wechat_window_location:
                 # pyautogui.hotkey('alt', 'space', 'x')  # 最大化当前窗口，快捷键方式不太好用
@@ -92,7 +93,7 @@ def open_wechat():
                         print('微信打开失败')
                         exit(1)
         else:
-            print(f'桌面上未找到微信应用图标 【{wechat_desktop_shortcut_image}】')
+            print(f'未找到微信应用图标 【{wechat_image}】')
             exit(1)
 
 
@@ -105,6 +106,8 @@ def search_contact(contact):
         pyautogui.moveTo(search_box_location, duration=0.5)
         pyautogui.click()
         write(contact)  # 输入
+        time.sleep(1)
+        pyautogui.press('enter')  # 点击回车键，选择搜索到的第一个联系人
     else:
         chat_image = 'images/chat.png'  # 聊天页
         chat_location = pyautogui.locateCenterOnScreen(chat_image, confidence=0.85, minSearchTime=2)
@@ -122,18 +125,6 @@ def search_contact(contact):
         else:
             print(f'未找到聊天页图标 【{chat_image}】')
             exit(1)
-
-    # 选择搜索到的第一个联系人
-    first_search_contact_image = 'images/first_search_contact.png'  # 搜索到的第一个联系人
-    first_search_contact_coords = pyautogui.locateOnScreen(first_search_contact_image, confidence=0.85, minSearchTime=2)
-    if first_search_contact_coords:
-        first_search_contact_location = center_lower(first_search_contact_coords)  # 计算中下部的坐标
-        pyautogui.moveTo(first_search_contact_location, duration=0.5)
-        pyautogui.click()
-        print(f'已找到联系人 【{contact}】')
-    else:
-        print(f'未找到微信好友 【{contact}】')
-        exit(1)
 
 
 def send_message(message):

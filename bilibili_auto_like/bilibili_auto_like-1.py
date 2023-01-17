@@ -30,9 +30,10 @@ def write(text):
 def open_url(browser, url):
     """打开网站"""
     if url:
+        # 搜索浏览器
         # pyautogui.hotkey('win', 'q')  # 打开"Windows 搜索"菜单
         pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
-        # 搜索浏览器
+        time.sleep(1)
         print(f'搜索浏览器应用 【{browser}】')
         write(browser)  # 输入
         if browser.startswith('microsoft') or browser.startswith('Microsoft'):

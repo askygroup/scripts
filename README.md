@@ -29,6 +29,7 @@
 |[iowait_jstack]|---|iowait告警自动打堆栈|:heavy_check_mark:|
 |[bilibili_auto_like]|---|自动给B站的视频评论点赞|:heavy_check_mark:|
 |[wechat_auto_reply]|---|自动回复微信消息|:heavy_check_mark:|
+|[battleofballs_top_report]|---|球球大作战段位排行榜实时播报|:heavy_check_mark:|
 |||||
 
 [template_file]: ./template_file
@@ -46,6 +47,7 @@
 [iowait_jstack]: ./iowait_jstack
 [bilibili_auto_like]: ./bilibili_auto_like
 [wechat_auto_reply]: ./wechat_auto_reply
+[battleofballs_top_report]: ./battleofballs_top_report
 
 
 ---
