@@ -91,7 +91,7 @@ def main():
     global tmp_start_time
     # ready_task_time = exec_task_time = list(range(0, 60, 5))  # 每五分钟执行异常
     exec_task_time = [0, 5, 30]  # 播报的时间分钟
-    ready_task_time = exec_task_time.append([59, 4, 29])  # 执行任务的时间分钟
+    ready_task_time = exec_task_time + [59, 4, 29]  # 执行任务的时间分钟
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
