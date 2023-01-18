@@ -54,7 +54,9 @@ def look_top():
     # 打开排行榜
     pyautogui.press('t', presses=2)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
     time.sleep(1)
-    pyautogui.press(['f', 'g'], interval=0.3)  # 分别点击自定义键F、G，查看段位榜、段位分榜，兼容随机出现的榜页面情况
+    pyautogui.press('f', presses=2)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+    time.sleep(1)
+    pyautogui.press('g', presses=2)  # 连续快速点击2次自定义键G，查看段位分榜，兼容随机出现的榜页面情况
     time.sleep(1)
     level_image = 'images/level.png'  # 大赛季段位排行榜页面
     level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
@@ -69,7 +71,7 @@ def look_top():
 
 def screenshot(image):
     """截屏保存"""
-    # 计算球球大作战左上角坐标
+    # 计算球球大作战左上角坐标，雷电模拟器启动后默认居中显示 1920*1080，如果移动窗口可能会导致截图不完成
     screen_width, screen_height = pyautogui.size()
     # print(screen_width, screen_height)  # output: "2560 1440"
     game_width, game_height = (1920, 1080)
@@ -89,7 +91,7 @@ def screenshot(image):
 def main():
     """主函数"""
     global tmp_start_time
-    # ready_task_time = exec_task_time = list(range(0, 60, 5))  # 每五分钟执行异常
+    # ready_task_time = exec_task_time = list(range(0, 60, 10))  # 每十分钟执行一次
     exec_task_time = [0, 5, 30]  # 播报的时间分钟
     ready_task_time = exec_task_time + [59, 4, 29]  # 执行任务的时间分钟
     wait_time = 60  # 程序等待时间
@@ -99,6 +101,7 @@ def main():
         ft_date_time = date_time.strftime('%F %T')  # 2023-01-17 12:00:00
         tmp_start_time = date_time.timestamp()  # 任务开始执行时间
         date_time_minute = date_time.minute  # 当前时间分钟数
+        date_time_second = date_time.second  # 当前时间秒钟数
 
         # 联系人
         # contact_name = 'ghost'
@@ -124,15 +127,18 @@ def main():
 
         # 第一执行任务不需要检查时间
         if repost_count != 1:
-            # 截图后再检查下当时时间，如果时间未到播报时间，重新执行
-            if date_time_minute not in exec_task_time:
+            # 截图后再检查下当时时间，如果时间未到播报时间，重新执行，兼容执行时间过长，导致播报时间分钟已过的情况，向后兼容一分钟
+            if date_time_minute not in exec_task_time and date_time_minute not in [i + 1 for i in exec_task_time]:
+                print(date_time_minute, exec_task_time)
                 continue  # 中断当前循环的当次执行，继续下一次循环
         open_wechat()  # 打开微信
         search_contact(contact_name)  # 搜索联系人
         send_message(message_content, 'text')  # 发送文字消息
         send_message(screenshot_image, 'image')  # 发送图片消息
         repost_count += 1
-        time.sleep(30)  # 程序等待，确保一分钟内只播报一次
+        tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+        print(f"{datetime.datetime.now().strftime('%F %T')} 第 {repost_count} 次播报完成，共耗时 {tmp_run_time} 秒\n")
+        time.sleep(60 - date_time_second)  # 程序等待，确保一分钟内只会播报一次，且下次也能整分钟播报
 
 
 if __name__ == '__main__':
