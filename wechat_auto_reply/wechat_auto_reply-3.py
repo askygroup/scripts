@@ -177,6 +177,40 @@ def search_contact(contact):
             exit(1)
 
 
+def new_message():
+    """查看新消息"""
+    chat_new_message_on_image = 'images/chat_new_message_on.png'  # 当前聊天页新消息
+    chat_new_message_on_location = pyautogui.locateCenterOnScreen(chat_new_message_on_image, confidence=0.85, minSearchTime=2)
+    if chat_new_message_on_location:
+        pyautogui.moveTo(chat_new_message_on_location, duration=0.5)
+        pyautogui.click(clicks=2)
+        new_message_image = 'images/new_message.png'  # 新消息
+        new_message_location = pyautogui.locateCenterOnScreen(new_message_image, confidence=0.8, minSearchTime=2)
+        if new_message_location:
+            print('查看新消息')
+            pyautogui.moveTo(new_message_location, duration=0.3)
+            pyautogui.click()
+            return True  # 返回真
+        else:
+            print('没有新的消息')
+    else:
+        chat_new_message_image = 'images/chat_new_message.png'  # 聊天页新消息
+        chat_new_message_location = pyautogui.locateCenterOnScreen(chat_new_message_image, confidence=0.85, minSearchTime=2)
+        if chat_new_message_location:
+            print('切换到聊天页新消息')
+            pyautogui.moveTo(chat_new_message_location, duration=0.5)
+            pyautogui.click()
+            chat_new_message_on_image = 'images/chat_new_message_on.png'  # 当前页为聊天页
+            chat_new_message_on_location = pyautogui.locateCenterOnScreen(chat_new_message_on_image, confidence=0.85, minSearchTime=2)
+            if chat_new_message_on_location:
+                new_message()  # 重新调用 new_message() 函数
+            else:
+                print('当前页未切换成聊天页新消息')
+                exit(1)
+        else:
+            print('没有新的消息')
+
+
 def send_message(message, msg_type='text'):
     """发送消息"""
     # 输入消息
@@ -231,6 +265,28 @@ def auto_send(contact, message, msg_type='text'):
         exit(1)
 
 
+def auto_reply(message, msg_type='text'):
+    """自动回复微信消息"""
+    def reply(_message, _msg_type='text', n=1):
+        nonlocal reply_count
+        print(f"{datetime.datetime.today().strftime('%F %T')} 第 {n} 次执行自动回复，已自动回复 {reply_count} 次")
+        # 打开微信
+        open_wechat()
+        # 查看新消息
+        result = new_message()
+        # 如果有新消息，自动回复新消息，如果一个人第二次发送消息，不会自动回复(因为当前对话框自动已读了)
+        if result:
+            send_message(_message, _msg_type)
+            reply_count += 1
+
+    # 执行自动回复
+    count, reply_count = 1, 0
+    while True:
+        reply(message, msg_type, count)
+        count += 1
+        time.sleep(10)
+
+
 def main():
     """主函数"""
     # 联系人
@@ -252,17 +308,22 @@ def main():
 
     open_wechat()  # 打开微信
     # auto_send(contact_name, message_content, 'text')  # 自动给微信好友发送文字消息
-    auto_send(contact_name, message_content, 'image')  # 自动给微信好友发送图片消息
+    # auto_send(contact_name, message_content, 'image')  # 自动给微信好友发送图片消息
+    # auto_reply(message_content, 'text')  # 自动回复微信消息，回复文字消息
+    auto_reply(message_content, 'image')  # 自动回复微信消息，回复图片消息
 
 
 if __name__ == '__main__':
     # 程序开始时间
     start_time = datetime.datetime.now().timestamp()
-    print(f"开始时间：{datetime.datetime.today().strftime('%F %T')}\n")
+    print(f"开始时间：{datetime.datetime.today().strftime('%F %T')}")
 
     # 切换到脚本所在目录
     script_dir = sys.path[0]  # 脚本所在目录
     os.chdir(script_dir)  # 切换到脚本所在目录
+
+    sys.setrecursionlimit(2000)  # 设置解释器的递归调用深度限制
+    print(f'递归限制已调整为：{sys.getrecursionlimit()}\n')
 
     main()
 

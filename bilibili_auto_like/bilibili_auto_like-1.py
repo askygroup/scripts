@@ -50,7 +50,14 @@ def open_url(browser, url):
             pyautogui.moveTo(browser_location, duration=0.5)
             pyautogui.click()
             time.sleep(2)  # 等待浏览器启动
-            # pyautogui.hotkey('win', 'up')  # 最大化当前窗口，Windows11快捷命令变了，如果有浏览器是全屏打开的，默认新的浏览器窗口就是全屏的，如果再次点击此快捷键会将窗口居上放置，会影响后面的输入
+            # 最大化当前窗口
+            # Windows11快捷命令变了，如果浏览器已经是全屏打开的，默认新打开的浏览器窗口就是全屏的，如果再次点击此快捷键会将窗口居上放置，会影响后面的输入
+            pyautogui.hotkey('win', 'up')
+            time.sleep(0.5)
+            pyautogui.hotkey('win', 'down')  # 兼容窗口居上放置，而不是全屏的情况
+            time.sleep(0.5)
+            pyautogui.hotkey('win', 'up')
+            time.sleep(0.5)
             print('浏览器已打开')
             print(f'输入网址 【{url}】')
             write(url)  # 输入

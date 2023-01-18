@@ -56,8 +56,15 @@ def open_wechat():
             if wechat_window_location:
                 pyautogui.moveTo(wechat_window_location, duration=0.5)
                 pyautogui.doubleClick()
-                # pyautogui.hotkey('alt', 'space', 'x')  # 最大化当前窗口，快捷键方式不太好用
-                # pyautogui.hotkey('win', 'up')  # 最大化当前窗口，Windows11快捷命令变了，如果有浏览器是全屏打开的，默认新的浏览器窗口就是全屏的，如果再次点击此快捷键会将窗口居上放置，会影响后面的输入
+                # 最大化当前窗口
+                # pyautogui.hotkey('alt', 'space', 'x')  # 此快捷键方式不太好用
+                # Windows11快捷命令变了，如果应用已经是全屏打开的，再次点击此快捷键会将窗口居上放置，会影响后面的输入
+                pyautogui.hotkey('win', 'up')
+                time.sleep(0.5)
+                pyautogui.hotkey('win', 'down')  # 兼容窗口居上放置，而不是全屏的情况
+                time.sleep(0.5)
+                pyautogui.hotkey('win', 'up')
+                time.sleep(0.5)
                 print('微信已打开')
             else:
                 # 扫码登录
