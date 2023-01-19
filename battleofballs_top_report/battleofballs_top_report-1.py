@@ -74,10 +74,11 @@ def screenshot(image):
     # 计算球球大作战左上角坐标，雷电模拟器启动后默认居中显示 1920*1080，如果移动窗口可能会导致截图不完成
     screen_width, screen_height = pyautogui.size()
     # print(screen_width, screen_height)  # output: "2560 1440"
-    game_width, game_height = (1920, 1080)
+    taskbar_height = 84  # Windows 任务栏高度
+    game_width, game_height = (1920, 1080)  # 球球大作战屏幕尺寸
     game_left_x = int(screen_width / 2) - int(game_width / 2)
-    game_top_y = int(screen_height / 2) - int(game_height / 2)
-    # print(game_left_x, game_top_y)  # output: "320 180"
+    game_top_y = int((screen_height - taskbar_height) / 2) - int(game_height / 2)
+    # print(game_left_x, game_top_y)  # output: "320 138"
     # 截屏
     region = (game_left_x, game_top_y, game_width, game_height)
     pyautogui.screenshot(image, region=region)
@@ -101,7 +102,6 @@ def main():
         ft_date_time = date_time.strftime('%F %T')  # 2023-01-17 12:00:00
         tmp_start_time = date_time.timestamp()  # 任务开始执行时间
         date_time_minute = date_time.minute  # 当前时间分钟数
-        date_time_second = date_time.second  # 当前时间秒钟数
 
         # 联系人
         # contact_name = 'ghost'
@@ -135,9 +135,12 @@ def main():
         search_contact(contact_name)  # 搜索联系人
         send_message(message_content, 'text')  # 发送文字消息
         send_message(screenshot_image, 'image')  # 发送图片消息
+
+        date_time = datetime.datetime.now()  # 当前时间
+        date_time_second = date_time.second  # 当前时间秒钟数
+        tmp_run_time = int(date_time.timestamp() - tmp_start_time)
+        print(f"{date_time.strftime('%F %T')} 第 {repost_count} 次播报完成，共耗时 {tmp_run_time} 秒\n")
         repost_count += 1
-        tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
-        print(f"{datetime.datetime.now().strftime('%F %T')} 第 {repost_count} 次播报完成，共耗时 {tmp_run_time} 秒\n")
         time.sleep(60 - date_time_second)  # 程序等待，确保一分钟内只会播报一次，且下次也能整分钟播报
 
 
@@ -150,8 +153,8 @@ if __name__ == '__main__':
     script_dir = sys.path[0]  # 脚本所在目录
     os.chdir(script_dir)  # 切换到脚本所在目录
     current_dir = Path.cwd()  # 当前所在目录
-    files_dir = current_dir.joinpath('screenshots')  # 截屏文件存放目录
-    files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截屏文件存放目录
+    files_dir = current_dir.joinpath('screenshots')  # 截图文件存放目录
+    files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
 
     main()
 

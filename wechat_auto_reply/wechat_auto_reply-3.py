@@ -14,7 +14,7 @@ import win32clipboard
 
 
 def center_lower(coords):
-    # 计算中下部的坐标
+    """计算中下部的坐标"""
     return coords[0] + int(coords[2] / 2), coords[1] + coords[3]
 
 
@@ -97,6 +97,8 @@ def open_wechat():
             print('打开微信')
             pyautogui.moveTo(wechat_location, duration=0.5)
             pyautogui.click(clicks=1)
+            time.sleep(2)  # 等待微信启动
+
             wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
             if wechat_window_location:
                 # 最大化当前窗口

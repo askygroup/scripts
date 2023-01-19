@@ -11,7 +11,7 @@ import pyperclip
 
 
 def center_lower(coords):
-    # 计算中下部的坐标
+    """计算中下部的坐标"""
     return coords[0] + int(coords[2] / 2), coords[1] + coords[3]
 
 
@@ -52,6 +52,8 @@ def open_wechat():
             print('打开微信')
             pyautogui.moveTo(wechat_desktop_shortcut_location, duration=0.5)
             pyautogui.click(clicks=2)
+            time.sleep(2)  # 等待微信启动
+
             wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
             if wechat_window_location:
                 pyautogui.moveTo(wechat_window_location, duration=0.5)

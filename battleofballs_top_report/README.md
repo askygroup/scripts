@@ -47,6 +47,7 @@
 |脚本迭代版本|描述|
 |---|---|
 |battleofballs_top_report-1.py|球球大作战段位排行榜播报|
+|battleofballs_top_report-2.py|球球大作战段位排行榜播报，优化截屏区域逻辑，增加图片水印|
 |||
 
 ##### wechat.py
@@ -65,7 +66,8 @@
 |文件|描述|
 |---|---|
 |./images/*.png|B站和微信的各种界面、按钮图标|
-
+|./screenshots|保存的截图文件|
+|./typefaces|字体文件|
 
 ---
 
