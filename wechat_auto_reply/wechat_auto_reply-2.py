@@ -181,7 +181,6 @@ def search_contact(contact):
 
 def send_message(message, msg_type='text'):
     """发送消息"""
-    # 输入消息
     input_message_box_null_image = 'images/input_message_box_null.png'  # 消息输入框
     input_message_box_null_location = pyautogui.locateCenterOnScreen(input_message_box_null_image, confidence=0.85, minSearchTime=2)
     if input_message_box_null_location:
@@ -192,6 +191,11 @@ def send_message(message, msg_type='text'):
             pyautogui.click()
             write(message, msg_type)  # 输入
             print('消息输入成功')
+
+            print(f'发送消息 【{message}】')
+            pyautogui.press('enter')  # 使用回车键发送消息
+            print('消息发送成功')
+
         else:
             print(f'需要发送的消息类型 【{msg_type}】 暂不支持')
             exit(1)
@@ -208,19 +212,6 @@ def send_message(message, msg_type='text'):
         else:
             print('未找到消息输入框')
             exit(1)
-
-    # 发送消息
-    send_message_image = 'images/send_message.png'  # 消息发送
-    send_message_location = pyautogui.locateCenterOnScreen(send_message_image, confidence=0.85, minSearchTime=2)
-    if send_message_location:
-        print(f'发送消息 【{message}】')
-        pyautogui.moveTo(send_message_location, duration=0.5)
-        pyautogui.click()
-        print('消息发送成功')
-    else:
-        print(f'发送消息 【{message}】')
-        pyautogui.press('enter')  # 未找到消息发送按钮，使用回车键发送
-        print('消息发送成功')
 
 
 def auto_send(contact, message, msg_type='text'):
