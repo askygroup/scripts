@@ -81,7 +81,7 @@ def write(data, data_type='text'):
 
 def open_wechat():
     """打开微信"""
-    wechat_window_image = 'images/wechat_window.png'  # 微信窗口
+    wechat_window_image = 'images/wechat_window-win10.png'  # 微信窗口
     wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)  # 降低匹配精度，兼容小的窗口，最多等待2秒
     if wechat_window_location:
         print('微信已打开')
@@ -93,7 +93,7 @@ def open_wechat():
         print(f'搜索微信应用')
         # write('wechat')
         write('微信')
-        wechat_image = 'images/wechat.png'  # 微信应用
+        wechat_image = 'images/wechat-win10.png'  # 微信应用
         wechat_location = pyautogui.locateCenterOnScreen(wechat_image, confidence=0.85, minSearchTime=2)
         if wechat_location:
             print('打开微信')
@@ -129,7 +129,7 @@ def open_wechat():
                             exit(1)
                 else:
                     # 确定登录
-                    enter_wechat_image = 'images/enter_wechat.png'  # 确定进入微信
+                    enter_wechat_image = 'images/enter_wechat-win10.png'  # 确定进入微信
                     enter_wechat_location = pyautogui.locateCenterOnScreen(enter_wechat_image, confidence=0.85, minSearchTime=2)
                     if enter_wechat_location:
                         pyautogui.moveTo(enter_wechat_location, duration=0.5)
@@ -153,7 +153,7 @@ def open_wechat():
 
 def search_contact(contact):
     """搜索联系人"""
-    search_box_image = 'images/search_box.png'  # 搜索框
+    search_box_image = 'images/search_box-win10.png'  # 搜索框
     search_box_location = pyautogui.locateCenterOnScreen(search_box_image, confidence=0.85, minSearchTime=2)
     if search_box_location:
         print(f'搜索联系人 【{contact}】')
@@ -163,13 +163,13 @@ def search_contact(contact):
         time.sleep(1)
         pyautogui.press('enter')  # 点击回车键，选择搜索到的第一个联系人
     else:
-        chat_image = 'images/chat.png'  # 聊天页
+        chat_image = 'images/chat-win10.png'  # 聊天页
         chat_location = pyautogui.locateCenterOnScreen(chat_image, confidence=0.85, minSearchTime=2)
         if chat_location:
             print('切换到聊天页')
             pyautogui.moveTo(chat_location, duration=0.5)
             pyautogui.click()
-            chat_on_image = 'images/chat_on.png'  # 当前页为聊天页
+            chat_on_image = 'images/chat_on-win10.png'  # 当前页为聊天页
             chat_on_location = pyautogui.locateCenterOnScreen(chat_on_image, confidence=0.85, minSearchTime=2)
             if chat_on_location:
                 search_contact(contact)  # 重新调用 search_contact() 函数
@@ -183,7 +183,7 @@ def search_contact(contact):
 
 def send_message(message, msg_type='text'):
     """发送消息"""
-    input_message_box_null_image = 'images/input_message_box_null.png'  # 消息输入框
+    input_message_box_null_image = 'images/input_message_box_null-win10.png'  # 消息输入框
     input_message_box_null_location = pyautogui.locateCenterOnScreen(input_message_box_null_image, confidence=0.85, minSearchTime=2)
     if input_message_box_null_location:
         # 如果消息类型为 text、image，调用 write() 函数输入消息；如果是其他类型则报错退出
@@ -202,7 +202,7 @@ def send_message(message, msg_type='text'):
             print(f'需要发送的消息类型 【{msg_type}】 暂不支持')
             exit(1)
     else:
-        input_message_box_image = 'images/input_message_box.png'  # 消息输入框非空
+        input_message_box_image = 'images/input_message_box-win10.png'  # 消息输入框非空
         input_message_box_coords = pyautogui.locateOnScreen(input_message_box_image, confidence=0.85, minSearchTime=2)
         if input_message_box_coords:
             input_message_box_location = center_lower(input_message_box_coords)  # 计算中下部的坐标

@@ -8,7 +8,7 @@ import datetime
 import time
 import pyautogui
 from PIL import Image, ImageDraw, ImageFont, ImageColor
-from wechat import *
+from wechat_win10 import *
 
 
 def open_battleofballs():
@@ -19,7 +19,7 @@ def open_battleofballs():
     time.sleep(1)
     print(f'搜索雷电模拟器应用')
     write('雷电模拟器')
-    ldmnq_image = 'images/ldmnq.png'  # 雷电模拟器应用
+    ldmnq_image = 'images/ldmnq-win10.png'  # 雷电模拟器应用
     ldmnq_location = pyautogui.locateCenterOnScreen(ldmnq_image, confidence=0.85, minSearchTime=2)
     if ldmnq_location:
         print('打开雷电模拟器')
@@ -27,7 +27,7 @@ def open_battleofballs():
         pyautogui.click(clicks=1)
         time.sleep(2)  # 等待雷电模拟器启动
 
-        battleofballs_window_image = 'images/battleofballs_window.png'  # 球球大作战主窗口
+        battleofballs_window_image = 'images/battleofballs_window-win10.png'  # 球球大作战主窗口
         battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.85, minSearchTime=2)
         if battleofballs_window_location:
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
@@ -35,7 +35,7 @@ def open_battleofballs():
             print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
             pyautogui.press('x', presses=6, interval=0.3)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
         else:
-            battleofballs_image = 'images/battleofballs.png'  # 球球大作战应用
+            battleofballs_image = 'images/battleofballs-win10.png'  # 球球大作战应用
             battleofballs_location = pyautogui.locateCenterOnScreen(battleofballs_image, confidence=0.85, minSearchTime=2)
             if battleofballs_location:
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
@@ -59,7 +59,7 @@ def look_top():
     time.sleep(1)
     pyautogui.press('h', presses=2)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
     time.sleep(1)
-    level_image = 'images/level.png'  # 大赛季段位排行榜页面
+    level_image = 'images/level-win10.png'  # 大赛季段位排行榜页面
     level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
     if level_location:
         tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
@@ -74,9 +74,9 @@ def screenshot(image):
     """截屏保存"""
     # 计算球球大作战左上角坐标，雷电模拟器启动后默认居中显示 1920*1080，如果移动窗口可能会导致截图不完成
     screen_width, screen_height = pyautogui.size()
-    # print(screen_width, screen_height)  # output: "2560 1440"
-    game_width, game_height = (1920, 1080)  # 球球大作战屏幕尺寸
-    ldmnq_window_image = 'images/ldmnq_window.png'  # 雷电模拟器窗口
+    # print(screen_width, screen_height)  # output: "1920 1080"
+    game_width, game_height = (1747, 983)  # 球球大作战屏幕尺寸
+    ldmnq_window_image = 'images/ldmnq_window-win10.png'  # 雷电模拟器窗口
     ldmnq_window_coords = pyautogui.locateOnScreen(ldmnq_window_image, confidence=0.85, minSearchTime=2)
     if ldmnq_window_coords:
         game_left_x, game_top_y = left_lower(ldmnq_window_coords)  # 计算左下角的坐标
@@ -108,7 +108,7 @@ def watermark(image):
     font = ImageFont.truetype('typefaces/SmileySans-Oblique.ttf', 50)  # 得意黑
     # 添加水印
     draw = ImageDraw.Draw(im)
-    draw.text((870, 35), text, fill=color, font=font)  # 水印左上角坐标为(850, 20)
+    draw.text((800, 35), text, fill=color, font=font)  # 水印左上角坐标为(850, 20)
     # 保存图像
     im.save(image)
     time.sleep(1)
@@ -118,8 +118,8 @@ def watermark(image):
 def main():
     """主函数"""
     global tmp_start_time
-    # exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
-    exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
+    exec_task_time = list(range(0, 60, 5))  # 每二十分钟执行一次
+    # exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
@@ -153,7 +153,7 @@ def main():
         print(f"{ft_date_time} 第 {repost_count} 次执行播报")
         open_battleofballs()  # 打开球球大作战
         look_top()  # 查看大赛季段位排行榜
-        screenshot(screenshot_image)  # 截图大赛季段位排行榜
+        screenshot(screenshot_image)  # 截图大赛季段位排行榜雷电模拟器
         watermark(screenshot_image)  # 给截图加水印
 
         # 第一执行任务不需要检查时间

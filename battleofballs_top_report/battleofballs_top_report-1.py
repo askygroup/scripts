@@ -56,7 +56,7 @@ def look_top():
     time.sleep(1)
     pyautogui.press('f', presses=2)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
     time.sleep(1)
-    pyautogui.press('g', presses=2)  # 连续快速点击2次自定义键G，查看段位分榜，兼容随机出现的榜页面情况
+    pyautogui.press('h', presses=2)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
     time.sleep(1)
     level_image = 'images/level.png'  # 大赛季段位排行榜页面
     level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
@@ -92,9 +92,8 @@ def screenshot(image):
 def main():
     """主函数"""
     global tmp_start_time
-    # ready_task_time = exec_task_time = list(range(0, 60, 10))  # 每十分钟执行一次
-    exec_task_time = [0, 5, 30]  # 播报的时间分钟
-    ready_task_time = exec_task_time + [59, 4, 29]  # 执行任务的时间分钟
+    # exec_task_time = list(range(0, 60, 10))  # 每十分钟执行一次
+    exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
@@ -116,7 +115,7 @@ def main():
         # 执行任务
         # 第一执行任务不需要检查时间
         if repost_count != 1:
-            if date_time_minute not in ready_task_time:
+            if date_time_minute not in exec_task_time:
                 time.sleep(wait_time)  # 程序等待
                 continue  # 中断当前循环的当次执行，继续下一次循环
         print(f'执行任务的时间已到 {date_time_minute}，开始执行任务')

@@ -89,8 +89,8 @@ def open_wechat():
         pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
         time.sleep(1)
         print(f'搜索微信应用')
-        # write('微信')
-        write('wechat')
+        # write('wechat')
+        write('微信')
         wechat_image = 'images/wechat.png'  # 微信应用
         wechat_location = pyautogui.locateCenterOnScreen(wechat_image, confidence=0.85, minSearchTime=2)
         if wechat_location:
@@ -123,7 +123,7 @@ def open_wechat():
                             print('微信已打开')
                             break
                         elif i >= 20:
-                            print('微信扫码登录打开失败')
+                            print('微信扫码登录打开失败，扫码登录超时')
                             exit(1)
                 else:
                     # 确定登录
@@ -139,10 +139,10 @@ def open_wechat():
                                 print('微信已打开')
                                 break
                             elif i >= 20:
-                                print('进入微信打开失败')
+                                print('进入微信打开失败，进入微信超时')
                                 exit(1)
                     else:
-                        print('微信打开失败')
+                        print(f'微信打开失败，未找到进入微信按钮图标 【{enter_wechat_image}】')
                         exit(1)
         else:
             print(f'未找到微信应用图标 【{wechat_image}】')

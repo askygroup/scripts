@@ -81,7 +81,7 @@ def open_wechat():
                             print('微信已打开')
                             break
                         elif i >= 20:
-                            print('微信扫码登录打开失败')
+                            print('微信扫码登录打开失败，扫码登录超时')
                             exit(1)
                 else:
                     # 确定登录
@@ -97,10 +97,10 @@ def open_wechat():
                                 print('微信已打开')
                                 break
                             elif i >= 20:
-                                print('进入微信打开失败')
+                                print('进入微信打开失败，进入微信超时')
                                 exit(1)
                     else:
-                        print('微信打开失败')
+                        print(f'微信打开失败，未找到进入微信按钮图标 【{enter_wechat_image}】')
                         exit(1)
         else:
             print(f'桌面上未找到微信应用图标 【{wechat_desktop_shortcut_image}】')
