@@ -55,6 +55,18 @@ def look_top():
     # 打开排行榜
     pyautogui.press('t', presses=2)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
     time.sleep(1)
+
+    competition_season_image = 'images/competition_season-win10.png'  # 大赛季段位排行榜页面
+    competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
+    if competition_season_location:
+        pyautogui.moveTo(competition_season_location, duration=0.5)
+        pyautogui.click(clicks=1)
+        print('大赛季页面已打开')
+        time.sleep(1)
+    else:
+        print('大赛季页面未正常打开，继续尝试')
+        look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
+
     pyautogui.press('f', presses=2)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
     time.sleep(1)
     pyautogui.press('h', presses=2)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
@@ -131,8 +143,8 @@ def main():
 
         # 联系人
         # contact_name = 'ghost'
-        contact_name = '东升的太阳'
-        # contact_name = '菲时报'
+        # contact_name = '东升的太阳'
+        contact_name = '菲时报'
 
         # 消息，凌晨0点会有特殊提醒消息
         if date_time_hour == 0:
