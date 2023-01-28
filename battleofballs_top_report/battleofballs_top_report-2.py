@@ -147,8 +147,8 @@ def main():
         contact_name = '菲时报'
 
         # 消息，凌晨0点会有特殊提醒消息
-        if date_time_hour == 0:
-            message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n新的一天开始喽，要加油哦！\n\n最新段位排行榜："
+        if date_time_hour == 0 and date_time_minute < 10:
+            message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n新的一天开始喽！\n\n最新段位排行榜："
         else:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n最新段位排行榜："
 

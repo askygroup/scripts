@@ -81,43 +81,55 @@ def write(data, data_type='text'):
 
 def open_wechat():
     """打开微信"""
-    wechat_window_image = 'images/wechat_window.png'  # 微信窗口
-    wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)  # 降低匹配精度，兼容小的窗口，最多等待2秒
-    if wechat_window_location:
-        print('微信已打开')
-    else:
-        # 搜索微信应用
-        # pyautogui.hotkey('win', 'q')  # 打开"Windows 搜索"菜单
-        pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
-        time.sleep(1)
-        print(f'搜索微信应用')
-        # write('wechat')
-        write('微信')
-        wechat_image = 'images/wechat.png'  # 微信应用
-        wechat_location = pyautogui.locateCenterOnScreen(wechat_image, confidence=0.85, minSearchTime=2)
-        if wechat_location:
-            print('打开微信')
-            pyautogui.moveTo(wechat_location, duration=0.5)
-            pyautogui.click(clicks=1)
-            time.sleep(2)  # 等待微信启动
+    # 搜索微信应用
+    # pyautogui.hotkey('win', 'q')  # 打开"Windows 搜索"菜单
+    pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
+    time.sleep(1)
+    print(f'搜索微信应用')
+    # write('wechat')
+    write('微信')
+    wechat_image = 'images/wechat.png'  # 微信应用
+    wechat_location = pyautogui.locateCenterOnScreen(wechat_image, confidence=0.85, minSearchTime=2)
+    if wechat_location:
+        print('打开微信')
+        pyautogui.moveTo(wechat_location, duration=0.5)
+        pyautogui.click(clicks=1)
+        time.sleep(2)  # 等待微信启动
 
-            wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
-            if wechat_window_location:
-                # 最大化当前窗口
-                # Windows11快捷命令变了，如果应用已经是全屏打开的，再次点击此快捷键会将窗口居上放置，会影响后面的输入
-                pyautogui.hotkey('win', 'up')
-                time.sleep(0.5)
-                pyautogui.hotkey('win', 'down')  # 兼容窗口居上放置，而不是全屏的情况
-                time.sleep(0.5)
-                pyautogui.hotkey('win', 'up')
-                time.sleep(0.5)
-                print('微信已打开')
+        wechat_window_image = 'images/wechat_window.png'  # 微信窗口
+        wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
+        if wechat_window_location:
+            # 最大化当前窗口
+            # Windows11快捷命令变了，如果应用已经是全屏打开的，再次点击此快捷键会将窗口居上放置，会影响后面的输入
+            pyautogui.hotkey('win', 'up')
+            time.sleep(0.5)
+            pyautogui.hotkey('win', 'down')  # 兼容窗口居上放置，而不是全屏的情况
+            time.sleep(0.5)
+            pyautogui.hotkey('win', 'up')
+            time.sleep(0.5)
+            print('微信已打开')
+        else:
+            # 扫码登录
+            scan_code_login_image = 'images/scan_code_login.png'  # 扫码登录微信
+            scan_code_login_location = pyautogui.locateCenterOnScreen(scan_code_login_image, confidence=0.85, minSearchTime=2)
+            if scan_code_login_location:
+                print('请用手机扫码登录微信')
+                for i in range(20):
+                    time.sleep(1)
+                    wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
+                    if wechat_window_location:
+                        print('微信已打开')
+                        break
+                    elif i >= 20:
+                        print('微信扫码登录打开失败，扫码登录超时')
+                        exit(1)
             else:
-                # 扫码登录
-                scan_code_login_image = 'images/scan_code_login.png'  # 扫码登录微信
-                scan_code_login_location = pyautogui.locateCenterOnScreen(scan_code_login_image, confidence=0.85, minSearchTime=2)
-                if scan_code_login_location:
-                    print('请用手机扫码登录微信')
+                # 确定登录
+                enter_wechat_image = 'images/enter_wechat.png'  # 确定进入微信
+                enter_wechat_location = pyautogui.locateCenterOnScreen(enter_wechat_image, confidence=0.85, minSearchTime=2)
+                if enter_wechat_location:
+                    pyautogui.moveTo(enter_wechat_location, duration=0.5)
+                    pyautogui.click()
                     for i in range(20):
                         time.sleep(1)
                         wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
@@ -125,30 +137,14 @@ def open_wechat():
                             print('微信已打开')
                             break
                         elif i >= 20:
-                            print('微信扫码登录打开失败，扫码登录超时')
+                            print('进入微信打开失败，进入微信超时')
                             exit(1)
                 else:
-                    # 确定登录
-                    enter_wechat_image = 'images/enter_wechat.png'  # 确定进入微信
-                    enter_wechat_location = pyautogui.locateCenterOnScreen(enter_wechat_image, confidence=0.85, minSearchTime=2)
-                    if enter_wechat_location:
-                        pyautogui.moveTo(enter_wechat_location, duration=0.5)
-                        pyautogui.click()
-                        for i in range(20):
-                            time.sleep(1)
-                            wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
-                            if wechat_window_location:
-                                print('微信已打开')
-                                break
-                            elif i >= 20:
-                                print('进入微信打开失败，进入微信超时')
-                                exit(1)
-                    else:
-                        print(f'微信打开失败，未找到进入微信按钮图标 【{enter_wechat_image}】')
-                        exit(1)
-        else:
-            print(f'未找到微信应用图标 【{wechat_image}】')
-            exit(1)
+                    print(f'微信打开失败，未找到进入微信按钮图标 【{enter_wechat_image}】')
+                    exit(1)
+    else:
+        print(f'未找到微信应用图标 【{wechat_image}】')
+        exit(1)
 
 
 def search_contact(contact):
