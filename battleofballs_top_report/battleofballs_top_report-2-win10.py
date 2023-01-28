@@ -171,7 +171,7 @@ def main():
         print(f"{ft_date_time} 第 {repost_count} 次执行播报")
         open_battleofballs()  # 打开球球大作战
         look_top()  # 查看大赛季段位排行榜
-        screenshot(screenshot_image)  # 截图大赛季段位排行榜雷电模拟器
+        screenshot(screenshot_image)  # 截图大赛季段位排行榜
         watermark(screenshot_image)  # 给截图加水印
 
         # 第一执行任务不需要检查时间

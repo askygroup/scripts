@@ -62,7 +62,7 @@ def look_top():
     pyautogui.press('t', presses=2)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
     time.sleep(1)
 
-    competition_season_image = 'images/competition_season-win10.png'  # 大赛季段位排行榜页面
+    competition_season_image = 'images/competition_season.png'  # 大赛季段位排行榜页面
     competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
     if competition_season_location:
         pyautogui.moveTo(competition_season_location, duration=0.5)
@@ -123,10 +123,10 @@ def watermark(image):
     # color = '#ff0000'
     color = (120, 142, 95)  # 灰色
     # 设置字体、字体大小
-    font = ImageFont.truetype('typefaces/SmileySans-Oblique.ttf', 50)  # 得意黑
+    font = ImageFont.truetype('typefaces/SmileySans-Oblique.ttf', 45)  # 得意黑
     # 添加水印
     draw = ImageDraw.Draw(im)
-    draw.text((870, 35), text, fill=color, font=font)  # 水印左上角坐标为(850, 20)
+    draw.text((1350, 45), text, fill=color, font=font)  # 水印左上角坐标为(1350, 45)
     # 保存图像
     im.save(image)
     time.sleep(1)
@@ -154,7 +154,7 @@ def main():
 
         # 消息，凌晨0点会有特殊提醒消息
         if date_time_hour == 0 and date_time_minute < 10:
-            message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n新的一天开始喽！\n\n最新段位排行榜："
+            message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n新的一天开始喽！\n\n最新段位排行榜："
         else:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n最新段位排行榜："
 
