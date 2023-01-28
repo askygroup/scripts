@@ -28,12 +28,18 @@ def open_battleofballs():
         time.sleep(2)  # 等待雷电模拟器启动
 
         battleofballs_window_image = 'images/battleofballs_window.png'  # 球球大作战主窗口
-        battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.85, minSearchTime=2)
+        battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
-            tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
-            print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
             pyautogui.press('x', presses=6, interval=0.5)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
+            top_image = 'images/top.png'  # 球球大作战排行榜图标
+            top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
+            if top_location:
+                tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+                print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
+            else:
+                print('排行榜图标未正常显示，继续尝试')
+                open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
         else:
             battleofballs_image = 'images/battleofballs.png'  # 球球大作战应用
             battleofballs_location = pyautogui.locateCenterOnScreen(battleofballs_image, confidence=0.85, minSearchTime=2)

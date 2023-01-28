@@ -109,9 +109,11 @@ def open_wechat():
             time.sleep(0.5)
             print('微信已打开')
         else:
-            # 扫码登录
             scan_code_login_image = 'images/scan_code_login.png'  # 扫码登录微信
             scan_code_login_location = pyautogui.locateCenterOnScreen(scan_code_login_image, confidence=0.85, minSearchTime=2)
+            enter_wechat_image = 'images/enter_wechat.png'  # 确定进入微信
+            enter_wechat_location = pyautogui.locateCenterOnScreen(enter_wechat_image, confidence=0.85, minSearchTime=2)
+            # 扫码登录
             if scan_code_login_location:
                 print('请用手机扫码登录微信')
                 for i in range(20):
@@ -123,25 +125,22 @@ def open_wechat():
                     elif i >= 20:
                         print('微信扫码登录打开失败，扫码登录超时')
                         exit(1)
+            # 确定登录
+            elif enter_wechat_location:
+                pyautogui.moveTo(enter_wechat_location, duration=0.5)
+                pyautogui.click()
+                for i in range(20):
+                    time.sleep(1)
+                    wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
+                    if wechat_window_location:
+                        print('微信已打开')
+                        break
+                    elif i >= 20:
+                        print('进入微信打开失败，进入微信超时')
+                        exit(1)
             else:
-                # 确定登录
-                enter_wechat_image = 'images/enter_wechat.png'  # 确定进入微信
-                enter_wechat_location = pyautogui.locateCenterOnScreen(enter_wechat_image, confidence=0.85, minSearchTime=2)
-                if enter_wechat_location:
-                    pyautogui.moveTo(enter_wechat_location, duration=0.5)
-                    pyautogui.click()
-                    for i in range(20):
-                        time.sleep(1)
-                        wechat_window_location = pyautogui.locateCenterOnScreen(wechat_window_image, confidence=0.85, minSearchTime=2)
-                        if wechat_window_location:
-                            print('微信已打开')
-                            break
-                        elif i >= 20:
-                            print('进入微信打开失败，进入微信超时')
-                            exit(1)
-                else:
-                    print(f'微信打开失败，未找到进入微信按钮图标 【{enter_wechat_image}】')
-                    exit(1)
+                print('未找到微信扫码登录或确认登录窗口，继续尝试')
+                open_wechat()  # 需要重新调用 open_wechat() 函数
     else:
         print(f'未找到微信应用图标 【{wechat_image}】')
         exit(1)

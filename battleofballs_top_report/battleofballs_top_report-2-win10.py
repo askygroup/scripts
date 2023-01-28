@@ -28,12 +28,18 @@ def open_battleofballs():
         time.sleep(2)  # 等待雷电模拟器启动
 
         battleofballs_window_image = 'images/battleofballs_window-win10.png'  # 球球大作战主窗口
-        battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.85, minSearchTime=2)
+        battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
-            tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
-            print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
             pyautogui.press('x', presses=6, interval=0.5)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
+            top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
+            top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
+            if top_location:
+                tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+                print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
+            else:
+                print('排行榜图标未正常显示，继续尝试')
+                open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
         else:
             battleofballs_image = 'images/battleofballs-win10.png'  # 球球大作战应用
             battleofballs_location = pyautogui.locateCenterOnScreen(battleofballs_image, confidence=0.85, minSearchTime=2)
@@ -130,8 +136,8 @@ def watermark(image):
 def main():
     """主函数"""
     global tmp_start_time
-    # exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
-    exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
+    exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
+    # exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
@@ -143,8 +149,8 @@ def main():
 
         # 联系人
         # contact_name = 'ghost'
-        contact_name = '东升的太阳'
-        # contact_name = '菲时报'
+        # contact_name = '东升的太阳'
+        contact_name = '菲时报'
 
         # 消息，凌晨0点会有特殊提醒消息
         if date_time_hour == 0 and date_time_minute < 10:
