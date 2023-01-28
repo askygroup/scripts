@@ -48,6 +48,7 @@
 |---|---|
 |battleofballs_top_report-1.py|球球大作战段位排行榜播报|
 |battleofballs_top_report-2.py|球球大作战段位排行榜播报，优化截屏区域逻辑，增加图片水印|
+|battleofballs_top_report-2-win10.py|球球大作战段位排行榜播报，优化截屏区域逻辑，增加图片水印，Windows 10 系统专用版本|
 |||
 
 ##### wechat.py
@@ -55,6 +56,7 @@
 |脚本迭代版本|描述|
 |---|---|
 |wechat.py|自动给微信群发送播报消息|
+|wechat_win10.py|自动给微信群发送播报消息，Windows 10 系统专用版本|
 |||
 
 

@@ -33,7 +33,7 @@ def open_battleofballs():
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
             tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
             print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
-            pyautogui.press('x', presses=6, interval=0.3)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
+            pyautogui.press('x', presses=6, interval=0.5)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
         else:
             battleofballs_image = 'images/battleofballs-win10.png'  # 球球大作战应用
             battleofballs_location = pyautogui.locateCenterOnScreen(battleofballs_image, confidence=0.85, minSearchTime=2)
