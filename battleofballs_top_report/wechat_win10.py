@@ -110,7 +110,7 @@ def open_wechat():
             print('微信已打开')
         else:
             # 扫码登录
-            scan_code_login_image = 'images/scan_code_login.png'  # 扫码登录微信
+            scan_code_login_image = 'images/scan_code_login-win10.png'  # 扫码登录微信
             scan_code_login_location = pyautogui.locateCenterOnScreen(scan_code_login_image, confidence=0.85, minSearchTime=2)
             if scan_code_login_location:
                 print('请用手机扫码登录微信')

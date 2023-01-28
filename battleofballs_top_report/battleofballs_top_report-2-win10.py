@@ -143,8 +143,8 @@ def main():
 
         # 联系人
         # contact_name = 'ghost'
-        # contact_name = '东升的太阳'
-        contact_name = '菲时报'
+        contact_name = '东升的太阳'
+        # contact_name = '菲时报'
 
         # 消息，凌晨0点会有特殊提醒消息
         if date_time_hour == 0 and date_time_minute < 10:
