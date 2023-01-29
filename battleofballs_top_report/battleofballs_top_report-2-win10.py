@@ -19,6 +19,7 @@ def open_battleofballs():
     time.sleep(1)
     print(f'搜索雷电模拟器应用')
     write('雷电模拟器')
+    time.sleep(1)
     ldmnq_image = 'images/ldmnq-win10.png'  # 雷电模拟器应用
     ldmnq_location = pyautogui.locateCenterOnScreen(ldmnq_image, confidence=0.85, minSearchTime=2)
     if ldmnq_location:
@@ -58,34 +59,40 @@ def open_battleofballs():
 
 def look_top():
     """查看大赛季段位排行榜"""
-    # 打开排行榜
-    pyautogui.press('t', presses=2)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
-    time.sleep(1)
-
-    competition_season_image = 'images/competition_season-win10.png'  # 大赛季段位排行榜页面
-    competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
-    if competition_season_location:
-        pyautogui.moveTo(competition_season_location, duration=0.5)
-        pyautogui.click(clicks=1)
-        print('大赛季页面已打开')
+    top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
+    top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
+    if top_location:
+        # 打开排行榜
+        print('打开排行榜')
+        pyautogui.press('t', presses=3)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
         time.sleep(1)
+        competition_season_image = 'images/competition_season-win10.png'  # 大赛季段位排行榜页面
+        competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
+        if competition_season_location:
+            pyautogui.moveTo(competition_season_location, duration=0.5)
+            pyautogui.click(clicks=1)
+            print('大赛季页面已打开')
+            time.sleep(1)
+            pyautogui.press('f', presses=3)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+            time.sleep(1)
+            pyautogui.press('h', presses=3)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
+            time.sleep(1)
+            level_image = 'images/level-win10.png'  # 大赛季段位排行榜页面
+            level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
+            if level_location:
+                tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+                print(f'大赛季段位排行榜已打开，共耗时 {tmp_run_time} 秒')
+                time.sleep(2)
+            else:
+                print('大赛季段位排行榜未正常打开，继续尝试')
+                look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
+        else:
+            print('大赛季页面未正常打开，继续尝试')
+            look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
     else:
-        print('大赛季页面未正常打开，继续尝试')
-        look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
-
-    pyautogui.press('f', presses=2)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
-    time.sleep(1)
-    pyautogui.press('h', presses=2)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
-    time.sleep(1)
-    level_image = 'images/level-win10.png'  # 大赛季段位排行榜页面
-    level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
-    if level_location:
-        tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
-        print(f'大赛季段位排行榜已打开，共耗时 {tmp_run_time} 秒')
-        time.sleep(2)
-    else:
-        print('大赛季段位排行榜未正常打开，继续尝试')
-        look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
+        print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
+        pyautogui.press('b')  # 返回游戏主窗口界面
+        look_top()  # 球球大作战排行榜图标未正常显示，需要重新调用 look_top() 函数
 
 
 def screenshot(image):

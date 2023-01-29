@@ -88,6 +88,7 @@ def open_wechat():
     print(f'搜索微信应用')
     # write('wechat')
     write('微信')
+    time.sleep(1)
     wechat_image = 'images/wechat-win10.png'  # 微信应用
     wechat_location = pyautogui.locateCenterOnScreen(wechat_image, confidence=0.85, minSearchTime=2)
     if wechat_location:
