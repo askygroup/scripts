@@ -167,14 +167,10 @@ def ocr(image, message):
     print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
 
     # 处理识别后的文本
-    # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
-    message += '\n排名 用户名 段位'  # 打印标题：排名 用户名 段位
     # 每行内容
     first_name, first_stars = result[0].split()[0], int(result[1].split()[-1])
     second_name, second_stars = result[2].split()[0], int(result[3].split()[-1])
     third_name, third_stars = result[4].split()[0], int(result[5].split()[-1])
-    message = f'{message}\n1 {first_name} {first_stars}\n2 {second_name} {second_stars}\n3 {third_name} {third_stars}'
-    # print(message)
     # 记录前三名的段位(星星数)
     tmp_top_data = {ft_date_time: {}}
     tmp_top_data[ft_date_time][first_name] = first_stars
@@ -182,21 +178,27 @@ def ocr(image, message):
     tmp_top_data[ft_date_time][third_name] = third_stars
     top_data.append(tmp_top_data)
     # print(top_data)
+    # 将排行榜历史数据记录到文件中
+    with open(top_file, 'w', encoding='utf-8') as file:
+        file.write(json.dumps(top_data, ensure_ascii=False, indent=4))
+
     # 判断是否有排行榜历史数据，有就计算第一名在此时间段升级的星星数量
+    first_delta_stars = second_delta_stars = third_delta_stars = 0  # 如果没有排行榜历史数据，都设置为0
     if len(top_data) > 1:
         history_ft_date_time = next((k for k in top_data[-2]))
         history_first_stars = top_data[-2][history_ft_date_time].get(first_name, 0)  # 如果未获取到历史数据返回 0
         history_second_stars = top_data[-2][history_ft_date_time].get(second_name, 0)  # 如果未获取到历史数据返回 0
+        history_third_stars = top_data[-2][history_ft_date_time].get(third_name, 0)  # 如果未获取到历史数据返回 0
         first_delta_stars = first_stars - history_first_stars  # 第一名新增星星数量
         second_delta_stars = second_stars - history_second_stars  # 第二名新增星星数量
-        message += f'\n\n在 {ft_date_time} 到 {history_ft_date_time} 这个时间段内'
-        message += f'\n第一名 {first_name} ，新增的星星数量为： {first_delta_stars}'
-        message += f'\n第二名 {second_name} ，新增的星星数量为： {second_delta_stars}'
-        # print(message)
+        third_delta_stars = third_stars - history_third_stars  # 第三名新增星星数量
 
-    # 将排行榜历史数据记录到文件中
-    with open(top_file, 'w', encoding='utf-8') as file:
-        file.write(json.dumps(top_data, ensure_ascii=False, indent=4))
+    # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
+    message += '\n{:<4}{:<10}{:<8}{}'.format('排名', '用户名', '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
+    message += '\n{:<5}{:<10}{:<10}{}'.format(1, first_name, first_stars, first_delta_stars)
+    message += '\n{:<5}{:<10}{:<10}{}'.format(2, second_name, second_stars, second_delta_stars)
+    message += '\n{:<5}{:<10}{:<10}{}'.format(3, third_name, third_stars, third_delta_stars)
+    # print(message)
 
     # 返回新生成的信息内容
     print('新的信息内容已生成')
