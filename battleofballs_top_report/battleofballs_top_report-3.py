@@ -9,6 +9,7 @@ import time
 import pyautogui
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import easyocr
+import json
 from wechat import *
 
 
@@ -143,6 +144,14 @@ def watermark(image):
 
 def ocr(image, message):
     """OCR 识别图像文本"""
+    top_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
+    # 判断是否存在排行历史数据文件，如果有，就读取文件并计算此时间段升级的星星数量，不存在则将历史数据设置为一个空列表
+    if top_file.is_file():
+        with open(top_file, 'r', encoding='utf-8') as file:
+            top_data = json.load(file)
+    else:
+        top_data = []
+
     ocr_image = 'screenshots/tmp_ocr_image.png'
     im = Image.open(image)
     # 裁切并保存图像，只识别排行榜前三名
@@ -160,12 +169,30 @@ def ocr(image, message):
     # 处理识别后的文本
     # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
     message += '\n排名 用户名 段位'  # 打印标题：排名 用户名 段位
-    # print(message)
     # 每行内容
-    first_line_content = f'1 {result[0].split()[0]} {result[1].split()[-1]}'
-    second_line_content = f'2 {result[2].split()[0]} {result[3].split()[-1]}'
-    third_line_content = f'3 {result[4].split()[0]} {result[5].split()[-1]}'
-    message = f'{message}\n{first_line_content}\n{second_line_content}\n{third_line_content}'
+    first_name, first_stars = result[0].split()[0], int(result[1].split()[-1])
+    second_name, second_stars = result[2].split()[0], int(result[3].split()[-1])
+    third_name, third_stars = result[4].split()[0], int(result[5].split()[-1])
+    message = f'{message}\n1 {first_name} {first_stars}\n2 {second_name} {second_stars}\n3 {third_name} {third_stars}'
+    # print(message)
+    # 记录前三名的段位(星星数)
+    tmp_top_data = {ft_date_time: {}}
+    tmp_top_data[ft_date_time][first_name] = first_stars
+    tmp_top_data[ft_date_time][second_name] = second_stars
+    tmp_top_data[ft_date_time][third_name] = third_stars
+    top_data.append(tmp_top_data)
+    # print(top_data)
+    # 判断是否有排行榜历史数据，有就计算第一名在此时间段升级的星星数量
+    if len(top_data) > 1:
+        history_ft_date_time = next((k for k in top_data[-2]))
+        history_first_stars = top_data[-2][history_ft_date_time].get(first_name)
+        delta_stars = first_stars - history_first_stars  # 新增星星数量
+        message += f'\n第一名 {first_name} 在 {ft_date_time} 到 {history_ft_date_time} 这个时间段，新增的星星数量为： {delta_stars}'
+        # print(message)
+
+    # 将排行榜历史数据记录到文件中
+    with open(top_file, 'w', encoding='utf-8') as file:
+        file.write(json.dumps(top_data, ensure_ascii=False, indent=4))
 
     # 返回新生成的信息内容
     print('新的信息内容已生成')
@@ -174,7 +201,7 @@ def ocr(image, message):
 
 def main():
     """主函数"""
-    global tmp_start_time
+    global tmp_start_time, ft_date_time
     exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
     # exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
@@ -220,10 +247,10 @@ def main():
             if date_time_minute not in exec_task_time and date_time_minute not in [i + 1 for i in exec_task_time]:
                 print(date_time_minute, exec_task_time)
                 continue  # 中断当前循环的当次执行，继续下一次循环
-        # open_wechat()  # 打开微信
-        # search_contact(contact_name)  # 搜索联系人
-        # send_message(message_content, 'text')  # 发送文字消息
-        # send_message(screenshot_image, 'image')  # 发送图片消息
+        open_wechat()  # 打开微信
+        search_contact(contact_name)  # 搜索联系人
+        send_message(message_content, 'text')  # 发送文字消息
+        send_message(screenshot_image, 'image')  # 发送图片消息
 
         date_time = datetime.datetime.now()  # 当前时间
         date_time_second = date_time.second  # 当前时间秒钟数
@@ -236,7 +263,8 @@ def main():
 if __name__ == '__main__':
     # 程序开始时间
     start_time = tmp_start_time = datetime.datetime.now().timestamp()
-    print(f"开始时间：{datetime.datetime.now().strftime('%F %T')}\n")
+    ft_date_time = datetime.datetime.now().strftime('%F %T')
+    print(f"开始时间：{ft_date_time}\n")
 
     # 切换到脚本所在目录
     script_dir = sys.path[0]  # 脚本所在目录
