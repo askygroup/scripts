@@ -14,6 +14,7 @@
 |win32clipboard|将图片复制到系统剪切板（已捆绑安装）|
 |Pillow|截图功能|
 |opencv-python|定位功能|
+|easyocr|OCR 识别功能|
 |||
 
 |软件|描述|
@@ -47,8 +48,11 @@
 |脚本迭代版本|描述|
 |---|---|
 |battleofballs_top_report-1.py|球球大作战段位排行榜播报|
-|battleofballs_top_report-2.py|球球大作战段位排行榜播报，优化截屏区域逻辑，增加图片水印|
-|battleofballs_top_report-2-win10.py|球球大作战段位排行榜播报，优化截屏区域逻辑，增加图片水印，Windows 10 系统专用版本|
+|battleofballs_top_report-2.py|球球大作战段位排行榜播报，优化打开排行榜逻辑、截屏区域逻辑，增加图片水印|
+|battleofballs_top_report-2-win10.py|球球大作战段位排行榜播报，优化打开排行榜逻辑、截屏区域逻辑，增加图片水印，Windows 10 系统专用版本|
+|battleofballs_top_report-3.py|球球大作战段位排行榜播报，增加OCR识别，识别用户名、段位|
+|battleofballs_top_report-3-win10.py|球球大作战段位排行榜播报，增加OCR识别，识别用户名、段位，Windows 10 系统专用版本|
+|battleofballs_top_report-3-1.py|球球大作战段位排行榜播报，增加OCR识别，识别排名、用户名、段位|
 |||
 
 ##### wechat.py

@@ -141,6 +141,37 @@ def watermark(image):
     print(f'截图已加水印并保存到 {image}')
 
 
+def ocr(image, message):
+    """OCR 识别图像文本"""
+    ocr_image = 'screenshots/tmp_ocr_image.png'
+    im = Image.open(image)
+    # 裁切并保存图像，只识别排行榜前三名
+    # im = im.crop(box=(90, 180, 1200, 520))  # 排行榜前三名，识别排名、用户名、段位
+    im = im.crop(box=(385, 220, 1200, 520))  # 排行榜前三名，识别用户名、段位
+    # im = im.crop(box=(1080, 220, 1200, 520))  # 排行榜前三名，只识别段位(星星数)
+    im.save(ocr_image)
+    print(f'图像已裁切并保存到 {ocr_image}')
+    # OCR 识别
+    reader = easyocr.Reader(['ch_sim', 'en'])  # 识别中英文两种语言
+    result = reader.readtext(ocr_image, paragraph=True, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
+    tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+    print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
+
+    # 处理识别后的文本
+    # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
+    message += '\n排名 用户名 段位'  # 打印标题：排名 用户名 段位
+    # print(message)
+    # 每行内容
+    first_line_content = f'1 {result[0].split()[0]} {result[1].split()[-1]}'
+    second_line_content = f'2 {result[2].split()[0]} {result[3].split()[-1]}'
+    third_line_content = f'3 {result[4].split()[0]} {result[5].split()[-1]}'
+    message = f'{message}\n{first_line_content}\n{second_line_content}\n{third_line_content}'
+
+    # 返回新生成的信息内容
+    print('新的信息内容已生成')
+    return message
+
+
 def main():
     """主函数"""
     global tmp_start_time
@@ -181,6 +212,7 @@ def main():
         look_top()  # 查看大赛季段位排行榜
         screenshot(screenshot_image)  # 截图大赛季段位排行榜
         watermark(screenshot_image)  # 给截图加水印
+        message_content = ocr(screenshot_image, message_content)  # OCR 识别
 
         # 第一执行任务不需要检查时间
         if repost_count != 1:

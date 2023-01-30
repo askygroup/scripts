@@ -9,7 +9,7 @@ import time
 import pyautogui
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import easyocr
-from wechat_win10 import *
+from wechat import *
 
 
 def open_battleofballs():
@@ -21,7 +21,7 @@ def open_battleofballs():
     print(f'搜索雷电模拟器应用')
     write('雷电模拟器')
     time.sleep(1)
-    ldmnq_image = 'images/ldmnq-win10.png'  # 雷电模拟器应用
+    ldmnq_image = 'images/ldmnq.png'  # 雷电模拟器应用
     ldmnq_location = pyautogui.locateCenterOnScreen(ldmnq_image, confidence=0.85, minSearchTime=2)
     if ldmnq_location:
         print('打开雷电模拟器')
@@ -29,12 +29,12 @@ def open_battleofballs():
         pyautogui.click(clicks=1)
         time.sleep(2)  # 等待雷电模拟器启动
 
-        battleofballs_window_image = 'images/battleofballs_window-win10.png'  # 球球大作战主窗口
+        battleofballs_window_image = 'images/battleofballs_window.png'  # 球球大作战主窗口
         battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
             pyautogui.press('x', presses=6, interval=0.5)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
-            top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
+            top_image = 'images/top.png'  # 球球大作战排行榜图标
             top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
             if top_location:
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
@@ -43,7 +43,7 @@ def open_battleofballs():
                 print('排行榜图标未正常显示，继续尝试')
                 open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
         else:
-            battleofballs_image = 'images/battleofballs-win10.png'  # 球球大作战应用
+            battleofballs_image = 'images/battleofballs.png'  # 球球大作战应用
             battleofballs_location = pyautogui.locateCenterOnScreen(battleofballs_image, confidence=0.85, minSearchTime=2)
             if battleofballs_location:
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
@@ -60,14 +60,14 @@ def open_battleofballs():
 
 def look_top():
     """查看大赛季段位排行榜"""
-    top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
+    top_image = 'images/top.png'  # 球球大作战排行榜图标
     top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
     if top_location:
         # 打开排行榜
         print('打开排行榜')
         pyautogui.press('t', presses=3)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
         time.sleep(1)
-        competition_season_image = 'images/competition_season-win10.png'  # 大赛季段位排行榜页面
+        competition_season_image = 'images/competition_season.png'  # 大赛季段位排行榜页面
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
         if competition_season_location:
             pyautogui.moveTo(competition_season_location, duration=0.5)
@@ -78,7 +78,7 @@ def look_top():
             time.sleep(1)
             pyautogui.press('h', presses=3)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
             time.sleep(1)
-            level_image = 'images/level-win10.png'  # 大赛季段位排行榜页面
+            level_image = 'images/level.png'  # 大赛季段位排行榜页面
             level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
             if level_location:
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
@@ -100,9 +100,9 @@ def screenshot(image):
     """截屏保存"""
     # 计算球球大作战左上角坐标，雷电模拟器启动后默认居中显示 1920*1080，如果移动窗口可能会导致截图不完成
     screen_width, screen_height = pyautogui.size()
-    # print(screen_width, screen_height)  # output: "1920 1080"
-    game_width, game_height = (1747, 983)  # 球球大作战屏幕尺寸
-    ldmnq_window_image = 'images/ldmnq_window-win10.png'  # 雷电模拟器窗口
+    # print(screen_width, screen_height)  # output: "2560 1440"
+    game_width, game_height = (1920, 1080)  # 球球大作战屏幕尺寸
+    ldmnq_window_image = 'images/ldmnq_window.png'  # 雷电模拟器窗口
     ldmnq_window_coords = pyautogui.locateOnScreen(ldmnq_window_image, confidence=0.85, minSearchTime=2)
     if ldmnq_window_coords:
         game_left_x, game_top_y = left_lower(ldmnq_window_coords)  # 计算左下角的坐标
@@ -134,11 +134,57 @@ def watermark(image):
     font = ImageFont.truetype('typefaces/SmileySans-Oblique.ttf', 45)  # 得意黑
     # 添加水印
     draw = ImageDraw.Draw(im)
-    draw.text((1200, 35), text, fill=color, font=font)  # 水印左上角坐标为(1200, 35)
+    draw.text((1350, 45), text, fill=color, font=font)  # 水印左上角坐标为(1350, 45)
     # 保存图像
     im.save(image)
     time.sleep(1)
     print(f'截图已加水印并保存到 {image}')
+
+
+def ocr(image, message):
+    """OCR 识别图像文本"""
+    ocr_image = 'screenshots/tmp_ocr_image.png'
+    im = Image.open(image)
+    # 裁切并保存图像，只识别排行榜前三名
+    im = im.crop(box=(100, 200, 1310, 570))  # 排行榜前三名，识别排名、用户名、段位
+    # im = im.crop(box=(420, 240, 1310, 570))  # 排行榜前三名，识别用户名、段位
+    # im = im.crop(box=(1185, 240, 1310, 570))  # 排行榜前三名，只识别段位(星星数)
+    im.save(ocr_image)
+    print(f'图像已裁切并保存到 {ocr_image}')
+    # OCR 识别
+    reader = easyocr.Reader(['ch_sim', 'en'])  # 识别中英文两种语言
+    result = reader.readtext(ocr_image, paragraph=True, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
+    tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+    print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
+
+    # 处理识别后的文本
+    # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
+    message += f"\n{' '.join(result[0:3])}"  # 打印标题：排名 用户名 段位
+    # print(message)
+    # 获取每行开头的索引
+    first_line_index = 3  # 第一行开头的索引
+    second_line_index = 3  # 第二行开头的索引
+    third_line_index = 3  # 第三行开头的索引
+    for index, word in enumerate(result[3:]):
+        if word == '1':
+            first_line_index = index + 3
+        elif word == '2':
+            second_line_index = index + 3
+        elif word == '3':
+            third_line_index = index + 3
+    # 每行内容
+    first_line_text = result[first_line_index: second_line_index]
+    second_line_text = result[second_line_index: third_line_index]
+    third_line_text = result[third_line_index:]
+    # print(first_line_text, second_line_text, third_line_text)
+    first_line_content = f'{first_line_text[0]} {first_line_text[-2].split()[0]} {first_line_text[-1].split()[-1]}'
+    second_line_content = f'{second_line_text[0]} {second_line_text[-2].split()[0]} {second_line_text[-1].split()[-1]}'
+    third_line_content = f'{third_line_text[0]} {third_line_text[-2].split()[0]} {third_line_text[-1].split()[-1]}'
+    message = f'{message}\n{first_line_content}\n{second_line_content}\n{third_line_content}'
+
+    # 返回新生成的信息内容
+    print('新的信息内容已生成')
+    return message
 
 
 def main():
@@ -181,6 +227,7 @@ def main():
         look_top()  # 查看大赛季段位排行榜
         screenshot(screenshot_image)  # 截图大赛季段位排行榜
         watermark(screenshot_image)  # 给截图加水印
+        message_content = ocr(screenshot_image, message_content)  # OCR 识别
 
         # 第一执行任务不需要检查时间
         if repost_count != 1:
@@ -188,10 +235,10 @@ def main():
             if date_time_minute not in exec_task_time and date_time_minute not in [i + 1 for i in exec_task_time]:
                 print(date_time_minute, exec_task_time)
                 continue  # 中断当前循环的当次执行，继续下一次循环
-        open_wechat()  # 打开微信
-        search_contact(contact_name)  # 搜索联系人
-        send_message(message_content, 'text')  # 发送文字消息
-        send_message(screenshot_image, 'image')  # 发送图片消息
+        # open_wechat()  # 打开微信
+        # search_contact(contact_name)  # 搜索联系人
+        # send_message(message_content, 'text')  # 发送文字消息
+        # send_message(screenshot_image, 'image')  # 发送图片消息
 
         date_time = datetime.datetime.now()  # 当前时间
         date_time_second = date_time.second  # 当前时间秒钟数
