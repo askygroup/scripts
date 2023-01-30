@@ -8,6 +8,7 @@ import datetime
 import time
 import pyautogui
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+import easyocr
 from wechat import *
 
 
@@ -140,11 +141,56 @@ def watermark(image):
     print(f'截图已加水印并保存到 {image}')
 
 
+def ocr(image, message):
+    """OCR 识别图像文本"""
+    ocr_image = 'screenshots/tmp_ocr_image.png'
+    im = Image.open(image)
+    # 裁切并保存图像，只识别排行榜前三名
+    im = im.crop(box=(100, 200, 1310, 570))  # 排行榜前三名
+    im.save(ocr_image)
+    print(f'图像已裁切并保存到 {ocr_image}')
+    # OCR 识别
+    reader = easyocr.Reader(['ch_sim', 'en'])  # 识别中英文两种语言
+    result = reader.readtext(ocr_image, paragraph=True, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
+    tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+    print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
+
+    # 处理识别后的文本
+    message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
+    message += f"\n{' '.join(result[0:3])}"  # 打印标题：排名 用户名 段位
+    # print(message)
+    # 获取每行开头的索引
+    first_line_index = 3  # 第一行开头的索引
+    second_line_index = 3  # 第二行开头的索引
+    third_line_index = 3  # 第三行开头的索引
+    for index, word in enumerate(result[3:]):
+        if word == '1':
+            first_line_index = index + 3
+        elif word == '2':
+            second_line_index = index + 3
+        elif word == '3':
+            third_line_index = index + 3
+    # 每行内容
+    first_line_text = result[first_line_index: second_line_index]
+    second_line_text = result[second_line_index: third_line_index]
+    third_line_text = result[third_line_index:]
+    # print(first_line_text, second_line_text, third_line_text)
+    first_line_content = f'{first_line_text[0]} {first_line_text[-2].split()[0]} {first_line_text[-1].split()[-1]}'
+    second_line_content = f'{second_line_text[0]} {second_line_text[-2].split()[0]} {second_line_text[-1].split()[-1]}'
+    third_line_content = f'{third_line_text[0]} {third_line_text[-2].split()[0]} {third_line_text[-1].split()[-1]}'
+    message = f'{message}\n{first_line_content}\n{second_line_content}\n{third_line_content}'
+
+    # 返回新生成的信息内容
+    tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+    print(f'新的信息内容已生成，共耗时 {tmp_run_time} 秒')
+    return message
+
+
 def main():
     """主函数"""
     global tmp_start_time
-    # exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
-    exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
+    exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
+    # exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
@@ -180,6 +226,7 @@ def main():
         look_top()  # 查看大赛季段位排行榜
         screenshot(screenshot_image)  # 截图大赛季段位排行榜
         watermark(screenshot_image)  # 给截图加水印
+        message_content = ocr(screenshot_image, message_content)  # OCR 识别
 
         # 第一执行任务不需要检查时间
         if repost_count != 1:
