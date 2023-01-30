@@ -185,9 +185,13 @@ def ocr(image, message):
     # 判断是否有排行榜历史数据，有就计算第一名在此时间段升级的星星数量
     if len(top_data) > 1:
         history_ft_date_time = next((k for k in top_data[-2]))
-        history_first_stars = top_data[-2][history_ft_date_time].get(first_name)
-        delta_stars = first_stars - history_first_stars  # 新增星星数量
-        message += f'\n第一名 {first_name} 在 {ft_date_time} 到 {history_ft_date_time} 这个时间段，新增的星星数量为： {delta_stars}'
+        history_first_stars = top_data[-2][history_ft_date_time].get(first_name, 0)  # 如果未获取到历史数据返回 0
+        history_second_stars = top_data[-2][history_ft_date_time].get(second_name, 0)  # 如果未获取到历史数据返回 0
+        first_delta_stars = first_stars - history_first_stars  # 第一名新增星星数量
+        second_delta_stars = second_stars - history_second_stars  # 第二名新增星星数量
+        message += f'\n\n在 {ft_date_time} 到 {history_ft_date_time} 这个时间段内'
+        message += f'\n第一名 {first_name} ，新增的星星数量为： {first_delta_stars}'
+        message += f'\n第二名 {second_name} ，新增的星星数量为： {second_delta_stars}'
         # print(message)
 
     # 将排行榜历史数据记录到文件中
