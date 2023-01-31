@@ -140,8 +140,8 @@ def open_wechat():
                 print('未找到微信扫码登录或确认登录窗口，继续尝试')
                 open_wechat()  # 需要重新调用 open_wechat() 函数
     else:
-        print(f'未找到微信应用图标 【{wechat_image}】')
-        exit(1)
+        print('未找到微信应用图标，继续尝试')
+        open_wechat()  # 需要重新调用 open_wechat() 函数
 
 
 def search_contact(contact):
