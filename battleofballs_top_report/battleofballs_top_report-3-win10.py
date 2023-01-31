@@ -167,15 +167,22 @@ def ocr(image, message):
     print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
 
     # 处理识别后的文本
+    # 判断段位数据是否为超神段位，如果是则打印超神的星星数，如果不是则直接打印段位信息
+    stars_data = True
+    for value in [result[i] for i in range(1, 6, 2)]:
+        if '超神' not in value:
+            stars_data = False
     # 每行内容
     first_name, first_stars = result[0].split()[0], int(result[1].split()[-1])
     second_name, second_stars = result[2].split()[0], int(result[3].split()[-1])
     third_name, third_stars = result[4].split()[0], int(result[5].split()[-1])
+
     # 记录前三名的段位(星星数)
     top_data[ft_date_time] = {}
     top_data[ft_date_time][first_name] = first_stars
     top_data[ft_date_time][second_name] = second_stars
     top_data[ft_date_time][third_name] = third_stars
+    top_data[ft_date_time]['run_time'] = tmp_run_time
     # print(top_data)
     # 将排行榜历史数据记录到文件中
     with open(top_file, 'w', encoding='utf-8') as file:
@@ -183,30 +190,25 @@ def ocr(image, message):
 
     # 判断是否有排行榜历史数据，有就计算第一名在此时间段升级的星星数量
     first_delta_stars = second_delta_stars = third_delta_stars = 0  # 如果没有排行榜历史数据，都设置为0
-    if top_data:
-        history_ft_date_time = [k for k in top_data][-1]  # 最后一次的历史数据
+    if top_data and stars_data:
+        history_ft_date_time = [k for k in top_data][-2]  # 最后一次的历史数据
         history_first_stars = top_data[history_ft_date_time].get(first_name, 0)  # 如果未获取到历史数据返回 0
         history_second_stars = top_data[history_ft_date_time].get(second_name, 0)  # 如果未获取到历史数据返回 0
         history_third_stars = top_data[history_ft_date_time].get(third_name, 0)  # 如果未获取到历史数据返回 0
-        first_delta_stars = first_stars - history_first_stars  # 第一名新增星星数量
-        second_delta_stars = second_stars - history_second_stars  # 第二名新增星星数量
-        third_delta_stars = third_stars - history_third_stars  # 第三名新增星星数量
+        first_delta_stars = int(first_stars) - int(history_first_stars)  # 第一名新增星星数量
+        second_delta_stars = int(second_stars) - int(history_second_stars)  # 第二名新增星星数量
+        third_delta_stars = int(third_stars) - int(history_third_stars)  # 第三名新增星星数量
 
     # 生成新的信息内容
     # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
     title_name = '用户名'
     names = [title_name, first_name, second_name, third_name]
     long_name_length = len(max(names, key=lambda name: len(name))) + 2  # 最长名字的长度加2
-    # print(long_name_length)
-    sep = '   '  # 一个中文字符宽度对应三个英文空格宽度，使用 chr(12288) 中文空格填充的话，会是一个特殊的隐藏空白字符
-    title_name = title_name + sep * (long_name_length - len(title_name))
-    first_name = first_name + sep * (long_name_length - len(first_name))
-    second_name = second_name + sep * (long_name_length - len(second_name))
-    third_name = third_name + sep * (long_name_length - len(third_name))
-    message += '\n{:<4}{}{:<8}{:>4}'.format('排名', title_name, '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
-    message += '\n{:<7}{}{:<8}{:>7}'.format(1, first_name, first_stars, first_delta_stars)
-    message += '\n{:<7}{}{:<8}{:>7}'.format(2, second_name, second_stars, second_delta_stars)
-    message += '\n{:<7}{}{:<8}{:>7}'.format(3, third_name, third_stars, third_delta_stars)
+    sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
+    message += '\n{:<4}{}{:<8}{:>4}'.format('排名', title_name + sep*(long_name_length - len(title_name)), '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
+    message += '\n{:<7}{}{:<8}{:>7}'.format(1, first_name + sep*(long_name_length - len(first_name)), first_stars, first_delta_stars)
+    message += '\n{:<7}{}{:<8}{:>7}'.format(2, second_name + sep*(long_name_length - len(second_name)), second_stars, second_delta_stars)
+    message += '\n{:<7}{}{:<8}{:>7}'.format(3, third_name + sep*(long_name_length - len(third_name)), third_stars, third_delta_stars)
     print('新的信息内容已生成')
     # print(message)
     return message
@@ -215,8 +217,8 @@ def ocr(image, message):
 def main():
     """主函数"""
     global tmp_start_time, ft_date_time
-    exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
     # exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
+    exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
