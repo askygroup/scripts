@@ -186,6 +186,7 @@ def ocr(image, message):
     sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
     message += '\n{:<4}{}{:<6}{:>4}'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
     # 加入排行榜信息
+    count = 1
     for key, value in tmp_top_data.items():
         # 判断是否有排行榜历史数据，有就获取用户的历史段位(星星数量)，没有就将历史数据设置为空字符串
         if top_data:
@@ -200,7 +201,8 @@ def ocr(image, message):
         else:
             delta_stars = 0
 
-        message += '\n{:<7}{}{:<6}{:>7}'.format(1, key + sep * (long_name_length - len(key)), value, delta_stars)
+        message += '\n{:<7}{}{:<6}{:>7}'.format(count, key + sep * (long_name_length - len(key)), value, delta_stars)
+        count += 1
     print('新的信息内容已生成')
     # print(message)
 
@@ -219,7 +221,7 @@ def main():
     """主函数"""
     global tmp_start_time, ft_date_time
     # exec_task_time = list(range(0, 60, 20))  # 整点开始，每二十分钟执行一次
-    exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
+    exec_task_time = [0, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
@@ -229,7 +231,7 @@ def main():
         date_time_minute = date_time.minute  # 当前时间分钟数
         date_time_hour = date_time.hour  # 当前时间小时数
         date_time_day = date_time.day  # 当前时间天数
-        last_month = (date_time - datetime.timedelta(days=1)).strftime('%F_%m')  # 上个月月份
+        last_month = (date_time - datetime.timedelta(days=1)).strftime('%Y%m')  # 上个月月份
 
         # 联系人
         # contact_name = 'ghost'
