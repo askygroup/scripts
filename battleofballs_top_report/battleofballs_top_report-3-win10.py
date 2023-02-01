@@ -4,6 +4,7 @@
 import os
 import sys
 from pathlib import Path
+import shutil
 import datetime
 import time
 import pyautogui
@@ -144,10 +145,9 @@ def watermark(image):
 
 def ocr(image, message):
     """OCR 识别图像文本，生成新的信息内容"""
-    top_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
     # 判断是否存在排行历史数据文件，如果有，就读取文件并计算此时间段升级的星星数量，不存在则将历史数据设置为一个空字典
-    if top_file.is_file():
-        with open(top_file, 'r', encoding='utf-8') as file:
+    if top_data_file.is_file():
+        with open(top_data_file, 'r', encoding='utf-8') as file:
             top_data = json.load(file)
     else:
         top_data = {}
@@ -167,58 +167,59 @@ def ocr(image, message):
     print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
 
     # 处理识别后的文本
-    # 判断段位数据是否为超神段位，如果是则打印超神的星星数，如果不是则直接打印段位信息
-    stars_data = True
-    for value in [result[i] for i in range(1, 6, 2)]:
-        if '超神' not in value:
-            stars_data = False
-    # 每行内容
-    first_name, first_stars = result[0].split()[0], int(result[1].split()[-1])
-    second_name, second_stars = result[2].split()[0], int(result[3].split()[-1])
-    third_name, third_stars = result[4].split()[0], int(result[5].split()[-1])
-
-    # 记录前三名的段位(星星数)
-    top_data[ft_date_time] = {}
-    top_data[ft_date_time][first_name] = first_stars
-    top_data[ft_date_time][second_name] = second_stars
-    top_data[ft_date_time][third_name] = third_stars
-    top_data[ft_date_time]['run_time'] = tmp_run_time
-    # print(top_data)
-    # 将排行榜历史数据记录到文件中
-    with open(top_file, 'w', encoding='utf-8') as file:
-        file.write(json.dumps(top_data, ensure_ascii=False, indent=4))
-
-    # 判断是否有排行榜历史数据，有就计算第一名在此时间段升级的星星数量
-    first_delta_stars = second_delta_stars = third_delta_stars = 0  # 如果没有排行榜历史数据，都设置为0
-    if top_data and stars_data:
-        history_ft_date_time = [k for k in top_data][-2]  # 最后一次的历史数据
-        history_first_stars = top_data[history_ft_date_time].get(first_name, 0)  # 如果未获取到历史数据返回 0
-        history_second_stars = top_data[history_ft_date_time].get(second_name, 0)  # 如果未获取到历史数据返回 0
-        history_third_stars = top_data[history_ft_date_time].get(third_name, 0)  # 如果未获取到历史数据返回 0
-        first_delta_stars = int(first_stars) - int(history_first_stars)  # 第一名新增星星数量
-        second_delta_stars = int(second_stars) - int(history_second_stars)  # 第二名新增星星数量
-        third_delta_stars = int(third_stars) - int(history_third_stars)  # 第三名新增星星数量
+    # 判断段位数据是否为超神段位，如果是则只保留超神的星星数量，如果不是则保留段位信息
+    tmp_top_data = {}  # 记录处理后的每行内容
+    for index, value in enumerate(result):
+        # 分别处理用户名和段位
+        if index in list(range(1, len(result), 2)):
+            if '超神' in value and value.split()[-1].isdigit():  # 星星数量是否为数字，兼容数字未识别成功的情况
+                tmp_top_data[tmp_name] = value.split()[-1]  # 去掉超神等信息，只保留星星数量
+            else:
+                tmp_top_data[tmp_name] = value  # 保留段位信息
+        else:
+            tmp_name = value.split()[0]  # 去掉头衔信息，只保留用户名
+    print(f'段位排行榜：{tmp_top_data}')
 
     # 生成新的信息内容
     # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
-    title_name = '用户名'
-    names = [title_name, first_name, second_name, third_name]
-    long_name_length = len(max(names, key=lambda name: len(name))) + 2  # 最长名字的长度加2
+    long_name_length = len(max([k for k in tmp_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
     sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
-    message += '\n{:<4}{}{:<8}{:>4}'.format('排名', title_name + sep*(long_name_length - len(title_name)), '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
-    message += '\n{:<7}{}{:<8}{:>7}'.format(1, first_name + sep*(long_name_length - len(first_name)), first_stars, first_delta_stars)
-    message += '\n{:<7}{}{:<8}{:>7}'.format(2, second_name + sep*(long_name_length - len(second_name)), second_stars, second_delta_stars)
-    message += '\n{:<7}{}{:<8}{:>7}'.format(3, third_name + sep*(long_name_length - len(third_name)), third_stars, third_delta_stars)
+    message += '\n{:<4}{}{:<6}{:>4}'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
+    # 加入排行榜信息
+    for key, value in tmp_top_data.items():
+        # 判断是否有排行榜历史数据，有就获取用户的历史段位(星星数量)，没有就将历史数据设置为空字符串
+        if top_data:
+            history_ft_date_time = [k for k in top_data][-1]  # 最后一次的历史数据
+            history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据返回空字符串
+        else:
+            history_stars = ''
+        # 判断当前和历史的段位(星星数量)是否都为数字，是的话就计算用户在此时间段新增的星星数量，不是就将新增的星星数量设置为 0
+        # print(key, value, history_stars)
+        if value.isdigit() and history_stars.isdigit():
+            delta_stars = int(value) - int(history_stars)  # 用户新增星星数量
+        else:
+            delta_stars = 0
+
+        message += '\n{:<7}{}{:<6}{:>7}'.format(1, key + sep * (long_name_length - len(key)), value, delta_stars)
     print('新的信息内容已生成')
     # print(message)
+
+    # 记录用户的段位(星星数量)
+    tmp_top_data['run_time'] = tmp_run_time
+    top_data[ft_date_time] = tmp_top_data
+    # print(top_data)
+    # 将排行榜历史数据记录到文件中
+    with open(top_data_file, 'w', encoding='utf-8') as file:
+        file.write(json.dumps(top_data, ensure_ascii=False, indent=4))
+
     return message
 
 
 def main():
     """主函数"""
     global tmp_start_time, ft_date_time
-    # exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
-    exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
+    # exec_task_time = list(range(0, 60, 20))  # 整点开始，每二十分钟执行一次
+    exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
@@ -227,6 +228,8 @@ def main():
         tmp_start_time = date_time.timestamp()  # 任务开始执行时间
         date_time_minute = date_time.minute  # 当前时间分钟数
         date_time_hour = date_time.hour  # 当前时间小时数
+        date_time_day = date_time.day  # 当前时间天数
+        last_month = (date_time - datetime.timedelta(days=1)).strftime('%F_%m')  # 上个月月份
 
         # 联系人
         # contact_name = 'ghost'
@@ -234,8 +237,11 @@ def main():
         contact_name = '菲时报'
 
         # 消息，凌晨0点会有特殊提醒消息
-        if date_time_hour == 0 and date_time_minute < 10:
+        if date_time_hour == 0 and date_time_minute < 5:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n新的一天开始喽！\n\n最新段位排行榜："
+            if date_time_day == 1:  # 月初切割下历史排行榜文件
+                top_data_file_bak = current_dir.joinpath(top_data_file.name.replace('.', f'-{last_month}.'))
+                shutil.move(top_data_file, top_data_file_bak)
         else:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n最新段位排行榜："
 
@@ -287,6 +293,7 @@ if __name__ == '__main__':
     current_dir = Path.cwd()  # 当前所在目录
     files_dir = current_dir.joinpath('screenshots')  # 截图文件存放目录
     files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
+    top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
 
     main()
 
