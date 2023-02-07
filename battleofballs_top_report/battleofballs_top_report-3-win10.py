@@ -11,6 +11,7 @@ import pyautogui
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import easyocr
 import json
+import win32api
 from wechat_win10 import *
 
 
@@ -35,7 +36,7 @@ def open_battleofballs():
         battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
-            pyautogui.press('x', presses=6, interval=0.5)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
+            pyautogui.press('x', presses=8, interval=0.3)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
             top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
             top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
             if top_location:
@@ -233,6 +234,32 @@ def main():
         date_time_day = date_time.day  # 当前时间天数
         last_month = (date_time - datetime.timedelta(days=1)).strftime('%Y%m')  # 上个月月份
 
+        # 月初第一天，切割下历史排行榜文件
+        if date_time_day == 1:
+            top_data_file_bak = current_dir.joinpath(top_data_file.name.replace('.', f'-{last_month}.'))
+            # 如果不存在上个月的文件，则切割；如果存在，则说明已经切割了
+            if not top_data_file_bak.is_file():
+                shutil.move(top_data_file, top_data_file_bak)
+                print(f'历史排行榜文件已切割完成 {top_data_file_bak}')
+
+        # 每隔一段时间重启下模拟器，兼容模拟器应用长时间使用会夯住，导致无法使用的情况
+        tmp_run_time = int(datetime.datetime.now().timestamp() - start_time)  # 程序已运行时间
+        restart_time_line = 10800  # 三个小时的秒数
+        restart_hour = list(range(0, 23, 6))  # 每隔6个小时，重启一下0、6、12、18
+        if tmp_run_time > restart_time_line and date_time_hour in restart_hour and date_time_minute == 10:  # 整点过10分时重启
+            print(f'模拟器使用时间过长，重启下模拟器，当前时间：{date_time_hour}:date_time_minute')
+            ldmnq_exe = 'dnplayer.exe'
+            # 关闭模拟器应用
+            os.system(f'taskkill /F /IM {ldmnq_exe}')
+            print(f'模拟器已关闭 {ldmnq_exe}')
+            time.sleep(5)  # 等待5秒后再启动
+            # 启动模拟器应用
+            # ldmnq_program_dir = r'D:\leidian\LDPlayer4'
+            # ldmnq_program = ldmnq_program_dir + '\\' + ldmnq_exe
+            # win32api.ShellExecute(0, 'open', ldmnq_program, '', '', 1)
+            # 打开球球大作战，其中也包含了启动模拟器应用的动作
+            open_battleofballs()
+
         # 联系人
         # contact_name = 'ghost'
         # contact_name = '东升的太阳'
@@ -241,9 +268,6 @@ def main():
         # 消息，凌晨0点会有特殊提醒消息
         if date_time_hour == 0 and date_time_minute < 5:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n新的一天开始喽！\n\n最新段位排行榜："
-            if date_time_day == 1:  # 月初切割下历史排行榜文件
-                top_data_file_bak = current_dir.joinpath(top_data_file.name.replace('.', f'-{last_month}.'))
-                shutil.move(top_data_file, top_data_file_bak)
         else:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n最新段位排行榜："
 
@@ -266,7 +290,7 @@ def main():
 
         # 第一执行任务不需要检查时间
         if repost_count != 1:
-            # 截图后再检查下当时时间，如果时间未到播报时间，重新执行，兼容执行时间过长，导致播报时间分钟已过的情况，向后兼容一分钟
+            # 截图后再检查下当时时间，如果时间未到播报时间，重新执行；兼容执行时间过长，导致播报时间分钟已过的情况，向后兼容一分钟
             if date_time_minute not in exec_task_time and date_time_minute not in [i + 1 for i in exec_task_time]:
                 print(date_time_minute, exec_task_time)
                 continue  # 中断当前循环的当次执行，继续下一次循环
