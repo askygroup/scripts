@@ -17,6 +17,12 @@ from wechat_win10 import *
 
 def open_battleofballs():
     """打开雷电模拟器，然后再打开球球大作战"""
+    # 打开雷电模拟器应用
+    # ldmnq_exe = 'dnplayer.exe'
+    # ldmnq_program_dir = r'D:\leidian\LDPlayer4'
+    # ldmnq_program = ldmnq_program_dir + '\\' + ldmnq_exe
+    # win32api.ShellExecute(0, 'open', ldmnq_program, '', '', 1)
+
     # 搜索雷电模拟器应用
     # pyautogui.hotkey('win', 'q')  # 打开"Windows 搜索"菜单
     pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
@@ -36,7 +42,8 @@ def open_battleofballs():
         battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
-            pyautogui.press('x', presses=8, interval=0.3)  # 连续点击6次自定义键F，关闭游戏启动后的所有弹窗
+            pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键F，关闭游戏启动后的所有弹窗
+            time.sleep(1)  # 等待游戏加载
             top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
             top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
             if top_location:
@@ -61,6 +68,15 @@ def open_battleofballs():
         open_battleofballs()  # 未找到雷电模拟器应用图标，需要重新调用 open_battleofballs() 函数
 
 
+def close_battleofballs():
+    """关闭雷电模拟器和球球大作战"""
+    ldmnq_exe = 'dnplayer.exe'
+    # 关闭模拟器应用
+    os.system(f'taskkill /F /IM {ldmnq_exe}')
+    print(f'模拟器已关闭 {ldmnq_exe}')
+    time.sleep(5)
+
+
 def look_top():
     """查看大赛季段位排行榜"""
     top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
@@ -68,9 +84,9 @@ def look_top():
     if top_location:
         # 打开排行榜
         print('打开排行榜')
-        pyautogui.press('t', presses=3)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
+        pyautogui.press('t', presses=3)  # 连续快速点击3次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
         time.sleep(1)
-        competition_season_image = 'images/competition_season-win10.png'  # 大赛季段位排行榜页面
+        competition_season_image = 'images/competition_season-win10.png'  # 大赛季页面图标
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
         if competition_season_location:
             pyautogui.moveTo(competition_season_location, duration=0.5)
@@ -91,8 +107,11 @@ def look_top():
                 print('大赛季段位排行榜未正常打开，继续尝试')
                 look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
         else:
-            print('大赛季页面未正常打开，继续尝试')
-            look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
+            # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
+            print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
+            close_battleofballs()  # 关闭球球大作战应用
+            open_battleofballs()  # 打开球球大作战应用
+            look_top()  # 重新调用 look_top() 函数
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
@@ -144,21 +163,12 @@ def watermark(image):
     print(f'截图已加水印并保存到 {image}')
 
 
-def ocr(image, message):
-    """OCR 识别图像文本，生成新的信息内容"""
-    # 判断是否存在排行历史数据文件，如果有，就读取文件并计算此时间段升级的星星数量，不存在则将历史数据设置为一个空字典
-    if top_data_file.is_file():
-        with open(top_data_file, 'r', encoding='utf-8') as file:
-            top_data = json.load(file)
-    else:
-        top_data = {}
-
+def ocr(image, box):
+    """OCR 识别图像指定区域的文本内容"""
+    # 裁切图像
     ocr_image = 'screenshots/tmp_ocr_image.png'
     im = Image.open(image)
-    # 裁切并保存图像，只识别排行榜前三名
-    # im = im.crop(box=(90, 180, 1200, 520))  # 排行榜前三名，识别排名、用户名、段位
-    im = im.crop(box=(385, 220, 1200, 520))  # 排行榜前三名，识别用户名、段位
-    # im = im.crop(box=(1080, 220, 1200, 520))  # 排行榜前三名，只识别段位(星星数)
+    im = im.crop(box)  # 裁切图像指定区域并保存，只识别指定区域的文本内容
     im.save(ocr_image)
     print(f'图像已裁切并保存到 {ocr_image}')
     # OCR 识别
@@ -166,8 +176,19 @@ def ocr(image, message):
     result = reader.readtext(ocr_image, paragraph=True, x_ths=1.5, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
     tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
     print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
+    return result
 
-    # 处理识别后的文本
+
+def generate_message(message, result):
+    """读取 OCR 识别到的文本，生成新的信息内容"""
+    # 判断是否存在排行历史数据文件，如果有，就读取文件并计算此时间段升级的星星数量，不存在则将历史数据设置为一个空字典
+    if top_data_file.is_file():
+        with open(top_data_file, 'r', encoding='utf-8') as file:
+            top_data = json.load(file)
+    else:
+        top_data = {}
+
+    # 处理识别的文本
     # 判断段位数据是否为超神段位，如果是则只保留超神的星星数量，如果不是则保留段位信息
     tmp_top_data = {}  # 记录处理后的每行内容
     for index, value in enumerate(result):
@@ -182,7 +203,7 @@ def ocr(image, message):
     print(f'段位排行榜：{tmp_top_data}')
 
     # 生成新的信息内容
-    # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
+    # message += f'\n（OCR 功能测试中）\n'  # 打印 OCR 识别结果列表
     long_name_length = len(max([k for k in tmp_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
     sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
     message += '\n{:<4}{}{:<6}{:>4}'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
@@ -208,6 +229,7 @@ def ocr(image, message):
     # print(message)
 
     # 记录用户的段位(星星数量)
+    tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
     tmp_top_data['run_time'] = tmp_run_time
     top_data[ft_date_time] = tmp_top_data
     # print(top_data)
@@ -242,24 +264,6 @@ def main():
                 shutil.move(top_data_file, top_data_file_bak)
                 print(f'历史排行榜文件已切割完成 {top_data_file_bak}')
 
-        # 每隔一段时间重启下模拟器，兼容模拟器应用长时间使用会夯住，导致无法使用的情况
-        tmp_run_time = int(datetime.datetime.now().timestamp() - start_time)  # 程序已运行时间
-        restart_time_line = 10800  # 三个小时的秒数
-        restart_hour = list(range(0, 23, 6))  # 每隔6个小时，重启一下0、6、12、18
-        if tmp_run_time > restart_time_line and date_time_hour in restart_hour and date_time_minute == 10:  # 整点过10分时重启
-            print(f'模拟器使用时间过长，重启下模拟器，当前时间：{date_time_hour}:date_time_minute')
-            ldmnq_exe = 'dnplayer.exe'
-            # 关闭模拟器应用
-            os.system(f'taskkill /F /IM {ldmnq_exe}')
-            print(f'模拟器已关闭 {ldmnq_exe}')
-            time.sleep(5)  # 等待5秒后再启动
-            # 启动模拟器应用
-            # ldmnq_program_dir = r'D:\leidian\LDPlayer4'
-            # ldmnq_program = ldmnq_program_dir + '\\' + ldmnq_exe
-            # win32api.ShellExecute(0, 'open', ldmnq_program, '', '', 1)
-            # 打开球球大作战，其中也包含了启动模拟器应用的动作
-            open_battleofballs()
-
         # 联系人
         # contact_name = 'ghost'
         # contact_name = '东升的太阳'
@@ -286,7 +290,12 @@ def main():
         look_top()  # 查看大赛季段位排行榜
         screenshot(screenshot_image)  # 截图大赛季段位排行榜
         watermark(screenshot_image)  # 给截图加水印
-        message_content = ocr(screenshot_image, message_content)  # OCR 识别
+        # 裁切图像指定区域，只识别排行榜前三名
+        # ocr_box = (90, 180, 1200, 520)  # 排行榜前三名，识别排名、用户名、段位
+        ocr_box = (385, 220, 1200, 520)  # 排行榜前三名，识别用户名、段位
+        # ocr_box = (1080, 220, 1200, 520)  # 排行榜前三名，只识别段位(星星数)
+        ocr_result = ocr(screenshot_image, ocr_box)  # OCR 识别
+        message_content = generate_message(message_content, ocr_result)  # 生成新的信息内容
 
         # 第一执行任务不需要检查时间
         if repost_count != 1:
