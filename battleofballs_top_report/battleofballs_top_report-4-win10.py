@@ -77,6 +77,47 @@ def close_battleofballs():
     time.sleep(5)
 
 
+def look_history_top():
+    """查看历史最高段位排行榜"""
+    top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
+    top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
+    if top_location:
+        # 打开排行榜
+        print('打开排行榜')
+        pyautogui.press('t', presses=3)  # 连续快速点击3次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
+        time.sleep(1)
+        more_top_image = 'images/more_top-win10.png'  # 更多排名图标
+        more_top_location = pyautogui.locateCenterOnScreen(more_top_image, confidence=0.85, minSearchTime=2)
+        if more_top_location:
+            pyautogui.moveTo(more_top_location, duration=0.5)
+            pyautogui.click(clicks=1)
+            print('更多排名页面已打开')
+            time.sleep(1)
+            pyautogui.press('f', presses=3)  # 连续快速点击3次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+            time.sleep(1)
+            pyautogui.press('z', presses=3)  # 连续快速点击3次自定义键F，查看历史最高榜，兼容随机出现的榜页面情况
+            time.sleep(1)
+            history_top_image = 'images/history_top-win10.png'  # 历史最高段位排行榜页面
+            history_top_location = pyautogui.locateCenterOnScreen(history_top_image, confidence=0.85, minSearchTime=2)
+            if history_top_location:
+                tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+                print(f'历史最高段位排行榜已打开，共耗时 {tmp_run_time} 秒')
+                time.sleep(1)
+            else:
+                print('历史最高段位排行榜未正常打开，继续尝试')
+                look_history_top()  # 随机出现的榜页面未切换到历史最高段位排行榜，需要重新调用 look_history_top() 函数
+        else:
+            # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
+            print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
+            close_battleofballs()  # 关闭球球大作战应用
+            open_battleofballs()  # 打开球球大作战应用
+            look_history_top()  # 重新调用 look_history_top() 函数
+    else:
+        print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
+        pyautogui.press('b')  # 返回游戏主窗口界面
+        look_history_top()  # 球球大作战排行榜图标未正常显示，需要重新调用 look_history_top() 函数
+
+
 def look_top():
     """查看大赛季段位排行榜"""
     top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
@@ -93,16 +134,16 @@ def look_top():
             pyautogui.click(clicks=1)
             print('大赛季页面已打开')
             time.sleep(1)
-            pyautogui.press('f', presses=3)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+            pyautogui.press('f', presses=3)  # 连续快速点击3次自定义键F，查看段位榜，兼容随机出现的榜页面情况
             time.sleep(1)
-            pyautogui.press('h', presses=3)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
+            pyautogui.press('h', presses=3)  # 连续快速点击3次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
             time.sleep(1)
             level_image = 'images/level-win10.png'  # 大赛季段位排行榜页面
             level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
             if level_location:
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
                 print(f'大赛季段位排行榜已打开，共耗时 {tmp_run_time} 秒')
-                time.sleep(2)
+                time.sleep(1)
             else:
                 print('大赛季段位排行榜未正常打开，继续尝试')
                 look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
@@ -177,6 +218,49 @@ def ocr(image, box):
     tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
     print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
     return result
+
+
+def update_history_top(current_date):
+    """更新历史最高排行榜第一名"""
+    # 判断是否存在排行历史数据文件，如果有，就读取文件并计算此时间段升级的星星数量，不存在则将历史数据设置为一个空字典
+    if top_data_file.is_file():
+        with open(top_data_file, 'r', encoding='utf-8') as file:
+            top_data = json.load(file)
+    else:
+        top_data = {}
+
+    # 查看历史最高段位排行榜
+    screenshot_image = files_dir.joinpath(f"screenshot_{current_date}.png")  # 截图名称
+    open_battleofballs()  # 打开球球大作战
+    look_history_top()  # 查看历史最高段位排行榜
+    screenshot(screenshot_image)  # 截图历史最高段位排行榜
+    watermark(screenshot_image)  # 给截图加水印
+    # 裁切图像指定区域，只识别历史最高排行榜第一名
+    ocr_box = (385, 220, 1200, 320)  # 排行榜第一名，识别用户名、段位
+    result = ocr(screenshot_image, ocr_box)  # OCR 识别
+
+    # 处理识别的文本
+    # 判断段位数据是否为超神段位，如果是则只保留超神的星星数量，如果不是则保留段位信息
+    tmp_top_data = {}  # 记录处理后的每行内容
+    for index, value in enumerate(result):
+        # 分别处理用户名和段位
+        if index in list(range(1, len(result), 2)):
+            if '超神' in value and value.split()[-1].isdigit():  # 星星数量是否为数字，兼容数字未识别成功的情况
+                tmp_top_data[tmp_name] = value.split()[-1]  # 去掉超神等信息，只保留星星数量
+            else:
+                tmp_top_data[tmp_name] = value  # 保留段位信息
+        else:
+            tmp_name = value.split()[0]  # 去掉头衔信息，只保留用户名
+    print(f'历史最高段位排行榜：{tmp_top_data}')
+
+    # 记录用户的段位(星星数量)
+    tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+    tmp_top_data['run_time'] = tmp_run_time
+    top_data[current_date] = tmp_top_data
+    # print(top_data)
+    # 将排行榜历史数据记录到文件中
+    with open(top_data_file, 'w', encoding='utf-8') as file:
+        file.write(json.dumps(top_data, ensure_ascii=False, indent=4))
 
 
 def generate_message(message, result):
@@ -254,7 +338,8 @@ def main():
         date_time_minute = date_time.minute  # 当前时间分钟数
         date_time_hour = date_time.hour  # 当前时间小时数
         date_time_day = date_time.day  # 当前时间天数
-        last_month = (date_time - datetime.timedelta(days=1)).strftime('%Y%m')  # 上个月月份
+        current_month = date_time.strftime('%Y%m')  # 当前月份 202302
+        last_month = (date_time - datetime.timedelta(days=1)).strftime('%Y%m')  # 上个月月份 202301
 
         # 月初第一天，切割下历史排行榜文件
         if date_time_day == 1:
@@ -264,13 +349,18 @@ def main():
                 shutil.move(top_data_file, top_data_file_bak)
                 print(f'历史排行榜文件已切割完成 {top_data_file_bak}')
 
+        # 月初第一天，更新下历史最高段位排行榜
+        if date_time_day == 1 and date_time_minute < 10:
+            print(f'更新历史最高段位排行榜 {current_month}')
+            update_history_top(current_month)
+
         # 联系人
         # contact_name = 'ghost'
         # contact_name = '东升的太阳'
         contact_name = '菲时报'
 
         # 消息，凌晨0点会有特殊提醒消息
-        if date_time_hour == 0 and date_time_minute < 5:
+        if date_time_hour == 0 and date_time_minute < 10:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n新的一天开始喽！\n\n最新段位排行榜："
         else:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n最新段位排行榜："

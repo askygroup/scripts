@@ -35,6 +35,7 @@
 |J|查看潮流榜、吐球键|
 |K|查看魅力榜、分身键|
 |H|查看段位分榜、发炫光表情|
+|Z|查看最高段位榜、查看MVP榜|
 |W、A、S、D|上左下右方向键|
 |||
 
@@ -49,10 +50,9 @@
 |---|---|
 |battleofballs_top_report-1.py|球球大作战段位排行榜播报|
 |battleofballs_top_report-2.py|球球大作战段位排行榜播报，优化打开排行榜逻辑、截屏区域逻辑，增加图片水印|
-|battleofballs_top_report-2-win10.py|球球大作战段位排行榜播报，优化打开排行榜逻辑、截屏区域逻辑，增加图片水印，Windows 10 系统专用版本|
-|battleofballs_top_report-3.py|球球大作战段位排行榜播报，增加OCR识别，识别用户名、段位|
-|battleofballs_top_report-3-win10.py|球球大作战段位排行榜播报，增加OCR识别，识别用户名、段位，Windows 10 系统专用版本|
-|battleofballs_top_report-3-1.py|球球大作战段位排行榜播报，增加OCR识别，识别排名、用户名、段位|
+|battleofballs_top_report-3.py|球球大作战段位排行榜播报，增加OCR识别，识别排名、用户名、段位|
+|battleofballs_top_report-4.py|球球大作战段位排行榜播报，增加更新历史最高排行榜，增加记录和播报段位信息|
+|battleofballs_top_report-4-win10.py|球球大作战段位排行榜播报，增加更新历史最高排行榜，增加记录和播报段位信息，Windows 10 系统专用版本|
 |||
 
 ##### wechat.py
@@ -71,7 +71,7 @@
 
 |文件|描述|
 |---|---|
-|./images/*.png|B站和微信的各种界面、按钮图标|
+|./images/*.png|雷电模拟器、球球大作战和微信的各种界面、按钮图标|
 |./screenshots|保存的截图文件|
 |./typefaces|字体文件|
 

@@ -65,7 +65,7 @@ def look_top():
     if top_location:
         # 打开排行榜
         print('打开排行榜')
-        pyautogui.press('t', presses=3)  # 连续快速点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
+        pyautogui.press('t', presses=3)  # 连续快速点击3次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
         time.sleep(1)
         competition_season_image = 'images/competition_season.png'  # 大赛季段位排行榜页面
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
@@ -74,9 +74,9 @@ def look_top():
             pyautogui.click(clicks=1)
             print('大赛季页面已打开')
             time.sleep(1)
-            pyautogui.press('f', presses=3)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+            pyautogui.press('f', presses=3)  # 连续快速点击3次自定义键F，查看段位榜，兼容随机出现的榜页面情况
             time.sleep(1)
-            pyautogui.press('h', presses=3)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
+            pyautogui.press('h', presses=3)  # 连续快速点击3次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
             time.sleep(1)
             level_image = 'images/level.png'  # 大赛季段位排行榜页面
             level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)

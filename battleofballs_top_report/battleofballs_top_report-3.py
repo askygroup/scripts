@@ -4,25 +4,16 @@
 import os
 import sys
 from pathlib import Path
-import shutil
 import datetime
 import time
 import pyautogui
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import easyocr
-import json
-import win32api
 from wechat import *
 
 
 def open_battleofballs():
     """打开雷电模拟器，然后再打开球球大作战"""
-    # 打开雷电模拟器应用
-    # ldmnq_exe = 'dnplayer.exe'
-    # ldmnq_program_dir = r'C:\Software\leidian\LDPlayer4'
-    # ldmnq_program = ldmnq_program_dir + '\\' + ldmnq_exe
-    # win32api.ShellExecute(0, 'open', ldmnq_program, '', '', 1)
-
     # 搜索雷电模拟器应用
     # pyautogui.hotkey('win', 'q')  # 打开"Windows 搜索"菜单
     pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
@@ -43,7 +34,6 @@ def open_battleofballs():
         if battleofballs_window_location:
             # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
             pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键F，关闭游戏启动后的所有弹窗
-            time.sleep(1)  # 等待游戏加载
             top_image = 'images/top.png'  # 球球大作战排行榜图标
             top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
             if top_location:
@@ -64,17 +54,8 @@ def open_battleofballs():
                 time.sleep(2)  # 等待球球大作战启动
             open_battleofballs()  # 球球大作战未启动完成，需要重新调用 open_battleofballs() 函数
     else:
-        print(f'未找到雷电模拟器应用图标，继续尝试')
-        open_battleofballs()  # 未找到雷电模拟器应用图标，需要重新调用 open_battleofballs() 函数
-
-
-def close_battleofballs():
-    """关闭雷电模拟器和球球大作战"""
-    ldmnq_exe = 'dnplayer.exe'
-    # 关闭模拟器应用
-    os.system(f'taskkill /F /IM {ldmnq_exe}')
-    print(f'模拟器已关闭 {ldmnq_exe}')
-    time.sleep(5)
+        print(f'未找到雷电模拟器应用图标 【{ldmnq_image}】')
+        exit(1)
 
 
 def look_top():
@@ -86,16 +67,16 @@ def look_top():
         print('打开排行榜')
         pyautogui.press('t', presses=3)  # 连续快速点击3次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
         time.sleep(1)
-        competition_season_image = 'images/competition_season.png'  # 大赛季页面图标
+        competition_season_image = 'images/competition_season.png'  # 大赛季段位排行榜页面
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
         if competition_season_location:
             pyautogui.moveTo(competition_season_location, duration=0.5)
             pyautogui.click(clicks=1)
             print('大赛季页面已打开')
             time.sleep(1)
-            pyautogui.press('f', presses=3)  # 连续快速点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+            pyautogui.press('f', presses=3)  # 连续快速点击3次自定义键F，查看段位榜，兼容随机出现的榜页面情况
             time.sleep(1)
-            pyautogui.press('h', presses=3)  # 连续快速点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
+            pyautogui.press('h', presses=3)  # 连续快速点击3次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
             time.sleep(1)
             level_image = 'images/level.png'  # 大赛季段位排行榜页面
             level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
@@ -107,11 +88,8 @@ def look_top():
                 print('大赛季段位排行榜未正常打开，继续尝试')
                 look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
         else:
-            # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
-            print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
-            close_battleofballs()  # 关闭球球大作战应用
-            open_battleofballs()  # 打开球球大作战应用
-            look_top()  # 重新调用 look_top() 函数
+            print('大赛季页面未正常打开，继续尝试')
+            look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
@@ -163,88 +141,57 @@ def watermark(image):
     print(f'截图已加水印并保存到 {image}')
 
 
-def ocr(image, box):
-    """OCR 识别图像指定区域的文本内容"""
-    # 裁切图像
+def ocr(image, message):
+    """OCR 识别图像文本"""
     ocr_image = 'screenshots/tmp_ocr_image.png'
     im = Image.open(image)
-    im = im.crop(box)  # 裁切图像指定区域并保存，只识别指定区域的文本内容
+    # 裁切并保存图像，只识别排行榜前三名
+    im = im.crop(box=(100, 200, 1310, 570))  # 排行榜前三名，识别排名、用户名、段位
+    # im = im.crop(box=(420, 240, 1310, 570))  # 排行榜前三名，识别用户名、段位
+    # im = im.crop(box=(1185, 240, 1310, 570))  # 排行榜前三名，只识别段位(星星数)
     im.save(ocr_image)
     print(f'图像已裁切并保存到 {ocr_image}')
     # OCR 识别
     reader = easyocr.Reader(['ch_sim', 'en'])  # 识别中英文两种语言
-    result = reader.readtext(ocr_image, paragraph=True, x_ths=1.5, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
+    result = reader.readtext(ocr_image, paragraph=True, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
     tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
     print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
-    return result
 
-
-def generate_message(message, result):
-    """读取 OCR 识别到的文本，生成新的信息内容"""
-    # 判断是否存在排行历史数据文件，如果有，就读取文件并计算此时间段升级的星星数量，不存在则将历史数据设置为一个空字典
-    if top_data_file.is_file():
-        with open(top_data_file, 'r', encoding='utf-8') as file:
-            top_data = json.load(file)
-    else:
-        top_data = {}
-
-    # 处理识别的文本
-    # 判断段位数据是否为超神段位，如果是则只保留超神的星星数量，如果不是则保留段位信息
-    tmp_top_data = {}  # 记录处理后的每行内容
-    for index, value in enumerate(result):
-        # 分别处理用户名和段位
-        if index in list(range(1, len(result), 2)):
-            if '超神' in value and value.split()[-1].isdigit():  # 星星数量是否为数字，兼容数字未识别成功的情况
-                tmp_top_data[tmp_name] = value.split()[-1]  # 去掉超神等信息，只保留星星数量
-            else:
-                tmp_top_data[tmp_name] = value  # 保留段位信息
-        else:
-            tmp_name = value.split()[0]  # 去掉头衔信息，只保留用户名
-    print(f'段位排行榜：{tmp_top_data}')
-
-    # 生成新的信息内容
-    # message += f'\n（OCR 功能测试中）\n'  # 打印 OCR 识别结果列表
-    long_name_length = len(max([k for k in tmp_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
-    sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
-    message += '\n{:<4}{}{:<6}{:>4}'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '新增')  # 打印标题：排名 用户名 段位 新增星星数量
-    # 加入排行榜信息
-    count = 1
-    for key, value in tmp_top_data.items():
-        # 判断是否有排行榜历史数据，有就获取用户的历史段位(星星数量)，没有就将历史数据设置为空字符串
-        if top_data:
-            history_ft_date_time = [k for k in top_data][-1]  # 最后一次的历史数据
-            history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据返回空字符串
-        else:
-            history_stars = ''
-        # 判断当前和历史的段位(星星数量)是否都为数字，是的话就计算用户在此时间段新增的星星数量，不是就将新增的星星数量设置为 0
-        # print(key, value, history_stars)
-        if value.isdigit() and history_stars.isdigit():
-            delta_stars = int(value) - int(history_stars)  # 用户新增星星数量
-        else:
-            delta_stars = 0
-
-        message += '\n{:<7}{}{:<6}{:>7}'.format(count, key + sep * (long_name_length - len(key)), value, delta_stars)
-        count += 1
-    print('新的信息内容已生成')
+    # 处理识别后的文本
+    # message += f'\n（OCR 功能测试中）\n'  # 打印OCR识别结果列表
+    message += f"\n{' '.join(result[0:3])}"  # 打印标题：排名 用户名 段位
     # print(message)
+    # 获取每行开头的索引
+    first_line_index = 3  # 第一行开头的索引
+    second_line_index = 3  # 第二行开头的索引
+    third_line_index = 3  # 第三行开头的索引
+    for index, word in enumerate(result[3:]):
+        if word == '1':
+            first_line_index = index + 3
+        elif word == '2':
+            second_line_index = index + 3
+        elif word == '3':
+            third_line_index = index + 3
+    # 每行内容
+    first_line_text = result[first_line_index: second_line_index]
+    second_line_text = result[second_line_index: third_line_index]
+    third_line_text = result[third_line_index:]
+    # print(first_line_text, second_line_text, third_line_text)
+    first_line_content = f'{first_line_text[0]} {first_line_text[-2].split()[0]} {first_line_text[-1].split()[-1]}'
+    second_line_content = f'{second_line_text[0]} {second_line_text[-2].split()[0]} {second_line_text[-1].split()[-1]}'
+    third_line_content = f'{third_line_text[0]} {third_line_text[-2].split()[0]} {third_line_text[-1].split()[-1]}'
+    message = f'{message}\n{first_line_content}\n{second_line_content}\n{third_line_content}'
 
-    # 记录用户的段位(星星数量)
-    tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
-    tmp_top_data['run_time'] = tmp_run_time
-    top_data[ft_date_time] = tmp_top_data
-    # print(top_data)
-    # 将排行榜历史数据记录到文件中
-    with open(top_data_file, 'w', encoding='utf-8') as file:
-        file.write(json.dumps(top_data, ensure_ascii=False, indent=4))
-
+    # 返回新生成的信息内容
+    print('新的信息内容已生成')
     return message
 
 
 def main():
     """主函数"""
-    global tmp_start_time, ft_date_time
-    # exec_task_time = list(range(0, 60, 20))  # 整点开始，每二十分钟执行一次
-    exec_task_time = [0, 30]  # 执行任务的时间分钟，整点、5分、30分执行
+    global tmp_start_time
+    exec_task_time = list(range(0, 60, 20))  # 每二十分钟执行一次
+    # exec_task_time = [0, 5, 30]  # 执行任务的时间分钟，整点、5分、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
@@ -253,16 +200,6 @@ def main():
         tmp_start_time = date_time.timestamp()  # 任务开始执行时间
         date_time_minute = date_time.minute  # 当前时间分钟数
         date_time_hour = date_time.hour  # 当前时间小时数
-        date_time_day = date_time.day  # 当前时间天数
-        last_month = (date_time - datetime.timedelta(days=1)).strftime('%Y%m')  # 上个月月份
-
-        # 月初第一天，切割下历史排行榜文件
-        if date_time_day == 1:
-            top_data_file_bak = current_dir.joinpath(top_data_file.name.replace('.', f'-{last_month}.'))
-            # 如果不存在上个月的文件，则切割；如果存在，则说明已经切割了
-            if not top_data_file_bak.is_file():
-                shutil.move(top_data_file, top_data_file_bak)
-                print(f'历史排行榜文件已切割完成 {top_data_file_bak}')
 
         # 联系人
         # contact_name = 'ghost'
@@ -270,7 +207,7 @@ def main():
         contact_name = '菲时报'
 
         # 消息，凌晨0点会有特殊提醒消息
-        if date_time_hour == 0 and date_time_minute < 5:
+        if date_time_hour == 0 and date_time_minute < 10:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n新的一天开始喽！\n\n最新段位排行榜："
         else:
             message_content = f"【菲时报，为您播报】\n北京时间：{ft_date_time}\n\n最新段位排行榜："
@@ -290,16 +227,11 @@ def main():
         look_top()  # 查看大赛季段位排行榜
         screenshot(screenshot_image)  # 截图大赛季段位排行榜
         watermark(screenshot_image)  # 给截图加水印
-        # 裁切图像指定区域，只识别排行榜前三名
-        # ocr_box = (100, 200, 1310, 570)  # 排行榜前三名，识别排名、用户名、段位
-        ocr_box = (420, 240, 1310, 570)  # 排行榜前三名，识别用户名、段位
-        # ocr_box = (1185, 240, 1310, 570)  # 排行榜前三名，只识别段位(星星数)
-        ocr_result = ocr(screenshot_image, ocr_box)  # OCR 识别
-        message_content = generate_message(message_content, ocr_result)  # 生成新的信息内容
+        message_content = ocr(screenshot_image, message_content)  # OCR 识别
 
         # 第一执行任务不需要检查时间
         if repost_count != 1:
-            # 截图后再检查下当时时间，如果时间未到播报时间，重新执行；兼容执行时间过长，导致播报时间分钟已过的情况，向后兼容一分钟
+            # 截图后再检查下当时时间，如果时间未到播报时间，重新执行，兼容执行时间过长，导致播报时间分钟已过的情况，向后兼容一分钟
             if date_time_minute not in exec_task_time and date_time_minute not in [i + 1 for i in exec_task_time]:
                 print(date_time_minute, exec_task_time)
                 continue  # 中断当前循环的当次执行，继续下一次循环
@@ -319,8 +251,7 @@ def main():
 if __name__ == '__main__':
     # 程序开始时间
     start_time = tmp_start_time = datetime.datetime.now().timestamp()
-    ft_date_time = datetime.datetime.now().strftime('%F %T')
-    print(f"开始时间：{ft_date_time}\n")
+    print(f"开始时间：{datetime.datetime.now().strftime('%F %T')}\n")
 
     # 切换到脚本所在目录
     script_dir = sys.path[0]  # 脚本所在目录
@@ -328,7 +259,6 @@ if __name__ == '__main__':
     current_dir = Path.cwd()  # 当前所在目录
     files_dir = current_dir.joinpath('screenshots')  # 截图文件存放目录
     files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
-    top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
 
     main()
 
