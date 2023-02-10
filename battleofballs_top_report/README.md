@@ -51,8 +51,8 @@
 |battleofballs_top_report-1.py|球球大作战段位排行榜播报|
 |battleofballs_top_report-2.py|球球大作战段位排行榜播报，优化打开排行榜逻辑、截屏区域逻辑，增加图片水印|
 |battleofballs_top_report-3.py|球球大作战段位排行榜播报，增加OCR识别，识别排名、用户名、段位|
-|battleofballs_top_report-4.py|球球大作战段位排行榜播报，增加更新历史最高排行榜，增加记录和播报段位信息|
-|battleofballs_top_report-4-win10.py|球球大作战段位排行榜播报，增加更新历史最高排行榜，增加记录和播报段位信息，Windows 10 系统专用版本|
+|battleofballs_top_report-4.py|球球大作战段位排行榜播报，增加更新历史最高排行榜和相关计算，增加记录和播报段位信息|
+|battleofballs_top_report-4-win10.py|球球大作战段位排行榜播报，增加更新和历史最高排行榜和相关计算，增加记录和播报段位信息，Windows 10 系统专用版本|
 |||
 
 ##### wechat.py
