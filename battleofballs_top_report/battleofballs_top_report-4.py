@@ -302,20 +302,24 @@ def generate_message(ocr_top_data):
         if top_data:
             history_ft_date_time = [k for k in top_data][-1]  # 最后一次的历史数据
             history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
-            history_today_ft_date_time = [k for k in top_data if k.startswith(ft_date_time.split()[0])][0]  # 用户今日的第一条历史数据
-            history_today_stars = top_data[history_today_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
+            today_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 今日历史数据
+            if today_history_data:
+                today_history_ft_date_time = today_history_data[0]  # 用户今日的第一条历史数据
+                today_history_stars = top_data[today_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
+            else:
+                today_history_stars = ''
         else:
             history_stars = ''
-            history_today_stars = ''
+            today_history_stars = ''
         # 判断当前和历史段位(星星数量)是否都为数字，是的话就计算
-        # print(key, value, history_stars, history_today_stars)
+        # print(key, value, history_stars, today_history_stars)
         if value.isdigit():
             if history_stars.isdigit():
                 delta_stars = int(value) - int(history_stars)  # 用户新增星星数量
             else:
                 delta_stars = int(value)  # 历史段位为超神以下，用户新增星星数量等于当前星星数量
-            if history_today_stars.isdigit():
-                today_delta_stars = int(value) - int(history_today_stars)  # 用户今日新增星星数量
+            if today_history_stars.isdigit():
+                today_delta_stars = int(value) - int(today_history_stars)  # 用户今日新增星星数量
             else:
                 today_delta_stars = int(value)  # 历史段位为超神以下，用户今日新增星星数量等于当前星星数量
         else:
