@@ -116,6 +116,7 @@ def look_history_top():
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
+        pyautogui.press('x', presses=2)  # 关闭游戏启动后延时显示的弹窗
         look_history_top()  # 球球大作战排行榜图标未正常显示，需要重新调用 look_history_top() 函数
 
 
@@ -157,6 +158,7 @@ def look_top():
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
+        pyautogui.press('x', presses=2)  # 关闭游戏启动后延时显示的弹窗
         look_top()  # 球球大作战排行榜图标未正常显示，需要重新调用 look_top() 函数
 
 
@@ -316,12 +318,16 @@ def generate_message(ocr_top_data):
         if value.isdigit():
             if history_stars.isdigit():
                 delta_stars = int(value) - int(history_stars)  # 用户新增星星数量
+            elif not history_stars:
+                delta_stars = int(value)  # 历史段位不为空，是超神以下，用户新增星星数量等于当前星星数量
             else:
-                delta_stars = int(value)  # 历史段位为超神以下，用户新增星星数量等于当前星星数量
+                delta_stars = 0  # 历史段位为空串，无数据，用户新增星星数量等于0
             if today_history_stars.isdigit():
                 today_delta_stars = int(value) - int(today_history_stars)  # 用户今日新增星星数量
+            elif not today_history_stars:
+                today_delta_stars = int(value)  # 历史段位不为空，是超神以下，用户今日新增星星数量等于当前星星数量
             else:
-                today_delta_stars = int(value)  # 历史段位为超神以下，用户今日新增星星数量等于当前星星数量
+                today_delta_stars = 0  # 历史段位为空串，无数据，用户今日新增星星数量等于0
         else:
             delta_stars = 0
             today_delta_stars = 0
