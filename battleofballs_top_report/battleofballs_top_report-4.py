@@ -322,16 +322,16 @@ def generate_message(ocr_top_data):
             elif history_stars:
                 delta_stars = int(value)  # 历史段位不为空，是超神以下，用户新增星星数量等于当前星星数量
             else:
-                delta_stars = 0  # 历史段位为空串，无数据，用户新增星星数量等于0
+                delta_stars = '-'  # 历史段位为空串，无数据，用户新增星星数量等于'-'
             if today_history_stars.isdigit():
                 today_delta_stars = int(value) - int(today_history_stars)  # 用户今日新增星星数量
             elif today_history_stars:
                 today_delta_stars = int(value)  # 历史段位不为空，是超神以下，用户今日新增星星数量等于当前星星数量
             else:
-                today_delta_stars = 0  # 历史段位为空串，无数据，用户今日新增星星数量等于0
+                today_delta_stars = '-'  # 历史段位为空串，无数据，用户今日新增星星数量等于'-'
         else:
-            delta_stars = 0
-            today_delta_stars = 0
+            delta_stars = '-'
+            today_delta_stars = '-'
 
         message += '{:<8}{}{:<6}{:>8}({})\n'.format(count, key + sep * (long_name_length - len(key)), value, delta_stars, today_delta_stars)
         count += 1
