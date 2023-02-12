@@ -303,14 +303,15 @@ def generate_message(ocr_top_data):
         # 判断是否有排行榜历史数据，有就获取用户的历史段位(星星数量)，没有就将历史数据设置为空字符串
         if top_data:
             history_ft_date_time = [k for k in top_data][-1]  # 最后一次的历史数据
+            print(f'上一次的历史数据：{history_ft_date_time}，{top_data[history_ft_date_time]}')
             history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
             today_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 今日历史数据
             if today_history_data:
                 today_history_ft_date_time = today_history_data[0]  # 用户今日的第一条历史数据
+                print(f'今日的第一条历史数据：{today_history_ft_date_time}，{top_data[today_history_ft_date_time]}')
                 today_history_stars = top_data[today_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
             else:
                 today_history_stars = ''
-            print(history_ft_date_time, today_history_data)
         else:
             history_stars = ''
             today_history_stars = ''
