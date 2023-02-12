@@ -390,7 +390,6 @@ def generate_message(ocr_top_data):
             else:
                 message += f'当前段位排行榜第一名段位较低 {first_stars}，超神以下暂不计算\n'
 
-
     print('新的信息内容已生成')
     # print(message)
     return message
