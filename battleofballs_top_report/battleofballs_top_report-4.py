@@ -310,21 +310,22 @@ def generate_message(ocr_top_data):
                 today_history_stars = top_data[today_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
             else:
                 today_history_stars = ''
+            print(history_ft_date_time, today_history_data)
         else:
             history_stars = ''
             today_history_stars = ''
         # 判断当前和历史段位(星星数量)是否都为数字，是的话就计算
-        # print(key, value, history_stars, today_history_stars)
+        print(key, value, history_stars, today_history_stars)
         if value.isdigit():
             if history_stars.isdigit():
                 delta_stars = int(value) - int(history_stars)  # 用户新增星星数量
-            elif not history_stars:
+            elif history_stars:
                 delta_stars = int(value)  # 历史段位不为空，是超神以下，用户新增星星数量等于当前星星数量
             else:
                 delta_stars = 0  # 历史段位为空串，无数据，用户新增星星数量等于0
             if today_history_stars.isdigit():
                 today_delta_stars = int(value) - int(today_history_stars)  # 用户今日新增星星数量
-            elif not today_history_stars:
+            elif today_history_stars:
                 today_delta_stars = int(value)  # 历史段位不为空，是超神以下，用户今日新增星星数量等于当前星星数量
             else:
                 today_delta_stars = 0  # 历史段位为空串，无数据，用户今日新增星星数量等于0
