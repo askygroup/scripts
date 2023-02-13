@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# _*_ coding: UTF-8 _*_
+# _*_ coding: utf-8 _*_
 
 import os
 import sys
@@ -44,7 +44,6 @@ def open_battleofballs():
         if battleofballs_window_location:
             time.sleep(2)  # 等待游戏启动
             pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键F，关闭游戏启动后的所有弹窗
-            time.sleep(1)  # 等待游戏加载
             top_image = 'images/top.png'  # 球球大作战排行榜图标
             top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
             if top_location:
@@ -81,6 +80,7 @@ def close_battleofballs():
 
 def look_history_top():
     """查看历史最高段位排行榜"""
+    global max_retry_count
     top_image = 'images/top.png'  # 球球大作战排行榜图标
     top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
     if top_location:
@@ -91,6 +91,7 @@ def look_history_top():
         more_top_image = 'images/more_top.png'  # 更多排名图标
         more_top_location = pyautogui.locateCenterOnScreen(more_top_image, confidence=0.85, minSearchTime=2)
         if more_top_location:
+            max_retry_count = 3  # 大赛季页面页面打开后，将最大可重试次数重置为3
             pyautogui.moveTo(more_top_location, duration=0.5)
             pyautogui.click(clicks=1)
             print('更多排名页面已打开')
@@ -109,11 +110,15 @@ def look_history_top():
                 print('历史最高段位排行榜未正常打开，继续尝试')
                 look_history_top()  # 随机出现的榜页面未切换到历史最高段位排行榜，需要重新调用 look_history_top() 函数
         else:
-            # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
-            print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
-            close_battleofballs()  # 关闭球球大作战应用
-            open_battleofballs()  # 打开球球大作战应用
-            look_history_top()  # 重新调用 look_history_top() 函数
+            if max_retry_count:
+                max_retry_count -= 1  # 最大可重试次数-1
+                look_top()  # 重新调用 look_top() 函数
+            else:
+                # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
+                print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
+                close_battleofballs()  # 关闭球球大作战应用
+                open_battleofballs()  # 打开球球大作战应用
+                look_history_top()  # 重新调用 look_history_top() 函数
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
@@ -123,6 +128,7 @@ def look_history_top():
 
 def look_top():
     """查看大赛季段位排行榜"""
+    global max_retry_count
     top_image = 'images/top.png'  # 球球大作战排行榜图标
     top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
     if top_location:
@@ -133,6 +139,7 @@ def look_top():
         competition_season_image = 'images/competition_season.png'  # 大赛季页面图标
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
         if competition_season_location:
+            max_retry_count = 3  # 大赛季页面页面打开后，将最大可重试次数重置为3
             pyautogui.moveTo(competition_season_location, duration=0.5)
             pyautogui.click(clicks=1)
             print('大赛季页面已打开')
@@ -151,11 +158,15 @@ def look_top():
                 print('大赛季段位排行榜未正常打开，继续尝试')
                 look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
         else:
-            # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
-            print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
-            close_battleofballs()  # 关闭球球大作战应用
-            open_battleofballs()  # 打开球球大作战应用
-            look_top()  # 重新调用 look_top() 函数
+            if max_retry_count:
+                max_retry_count -= 1  # 最大可重试次数-1
+                look_top()  # 重新调用 look_top() 函数
+            else:
+                # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
+                print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
+                close_battleofballs()  # 关闭球球大作战应用
+                open_battleofballs()  # 打开球球大作战应用
+                look_top()  # 重新调用 look_top() 函数
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
@@ -310,8 +321,8 @@ def generate_message(ocr_top_data):
                 today_history_ft_date_time = today_history_data[0]  # 用户今日的第一条历史数据
                 today_history_stars = top_data[today_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
                 if count == 1:  # 只打印一次
-                    print(f'今日的第一条历史数据：{top_data[today_history_ft_date_time]}')
-                    print(f'最近一次的历史数据：{top_data[history_ft_date_time]}')
+                    print(f'今日的第一条历史数据：{today_history_ft_date_time}: {top_data[today_history_ft_date_time]}')
+                    print(f'最近一次的历史数据：{history_ft_date_time}: {top_data[history_ft_date_time]}')
             else:
                 today_history_stars = ''
         else:
@@ -483,6 +494,8 @@ if __name__ == '__main__':
     files_dir = current_dir.joinpath('screenshots')  # 截图文件存放目录
     files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
     top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
+
+    max_retry_count = 3  # 最大可重试次数
 
     main()  # 主函数
 
