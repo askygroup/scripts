@@ -44,6 +44,7 @@ def open_battleofballs():
         if battleofballs_window_location:
             time.sleep(2)  # 等待游戏启动
             pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键F，关闭游戏启动后的所有弹窗
+            time.sleep(1)  # 等待游戏加载
             top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
             top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
             if top_location:
@@ -51,7 +52,7 @@ def open_battleofballs():
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
                 print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
             else:
-                print('排行榜图标未正常显示，继续尝试')
+                print('球球大作战已打开，但排行榜图标未正常显示，继续尝试')
                 open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
         else:
             battleofballs_image = 'images/battleofballs-win10.png'  # 球球大作战应用
@@ -302,14 +303,15 @@ def generate_message(ocr_top_data):
     for key, value in ocr_top_data.items():
         # 判断是否有排行榜历史数据，有就获取用户的历史段位(星星数量)，没有就将历史数据设置为空字符串
         if top_data:
-            history_ft_date_time = [k for k in top_data][-1]  # 最后一次的历史数据
-            print(f'上一次的历史数据：{history_ft_date_time}')
+            history_ft_date_time = [k for k in top_data][-1]  # 最近一次的历史数据
             history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
             today_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 今日历史数据
             if today_history_data:
                 today_history_ft_date_time = today_history_data[0]  # 用户今日的第一条历史数据
-                print(f'今日的第一条历史数据：{today_history_ft_date_time}')
                 today_history_stars = top_data[today_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
+                if count == 1:  # 只打印一次
+                    print(f'今日的第一条历史数据：{top_data[today_history_ft_date_time]}')
+                    print(f'最近一次的历史数据：{top_data[history_ft_date_time]}')
             else:
                 today_history_stars = ''
         else:
