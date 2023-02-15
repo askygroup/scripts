@@ -1,0 +1,37 @@
+{
+    "黄焖鸡": {
+        "dinnertime": "中晚",
+        "distance": "近",
+        "like": 1
+    },
+    "淮南牛肉汤": {
+        "dinnertime": "中晚",
+        "distance": "近",
+        "like": 1
+    },
+    "葱油拌面": {
+        "dinnertime": "早",
+        "distance": "近",
+        "like": 1
+    },
+    "武汉热干面": {
+        "dinnertime": "早",
+        "distance": "近",
+        "like": 1
+    },
+    "襄阳牛肉面": {
+        "dinnertime": "早中晚",
+        "distance": "远",
+        "like": 1
+    },
+    "烤鱼": {
+        "dinnertime": "中晚",
+        "distance": "远",
+        "like": 1
+    },
+    "大排档烧烤": {
+        "dinnertime": "晚夜",
+        "distance": "远近",
+        "like": 1
+    }
+}

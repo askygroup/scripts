@@ -22,7 +22,7 @@
 |date_and_time|[birthday_count]|生日相关计算|:heavy_check_mark:|
 |:pushpin:||||
 |[multi_tasking]|---|多任务（多进程多线程）|:heavy_check_mark:|
-|[what_to_eat]|---|吃啥|施工中 :no_entry:|
+|[what_to_eat]|---|吃啥|:heavy_check_mark:|
 |[loading_ascii]|---|逐行加载 ASCII 艺术字文件|:heavy_check_mark:|
 |[query_ip_geolocation]|---|查询IP属地信息|:heavy_check_mark:|
 |[nginx_log_cut]|---|nginx日志切割|:heavy_check_mark:|

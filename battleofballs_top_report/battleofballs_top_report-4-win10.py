@@ -91,7 +91,7 @@ def look_history_top():
         more_top_image = 'images/more_top-win10.png'  # 更多排名图标
         more_top_location = pyautogui.locateCenterOnScreen(more_top_image, confidence=0.85, minSearchTime=2)
         if more_top_location:
-            max_retry_count = 3  # 大赛季页面页面打开后，将最大可重试次数重置为3
+            max_retry_count = 3  # 更多排名页面打开后，将最大可重试次数重置为3
             pyautogui.moveTo(more_top_location, duration=0.5)
             pyautogui.click(clicks=1)
             print('更多排名页面已打开')
@@ -112,18 +112,20 @@ def look_history_top():
         else:
             if max_retry_count:
                 max_retry_count -= 1  # 最大可重试次数-1
+                print('更多排名页面未正常打开，继续尝试')
                 look_top()  # 重新调用 look_top() 函数
             else:
                 # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
                 print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
                 close_battleofballs()  # 关闭球球大作战应用
                 open_battleofballs()  # 打开球球大作战应用
+                max_retry_count = 3  # 球球大作战重新打开后，将最大可重试次数重置为3
                 look_history_top()  # 重新调用 look_history_top() 函数
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
         pyautogui.press('x', presses=2)  # 关闭游戏启动后延时显示的弹窗
-        look_history_top()  # 球球大作战排行榜图标未正常显示，需要重新调用 look_history_top() 函数
+        look_history_top()  # 排行榜图标未正常显示，需要重新调用 look_history_top() 函数
 
 
 def look_top():
@@ -139,7 +141,7 @@ def look_top():
         competition_season_image = 'images/competition_season-win10.png'  # 大赛季页面图标
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
         if competition_season_location:
-            max_retry_count = 3  # 大赛季页面页面打开后，将最大可重试次数重置为3
+            max_retry_count = 3  # 大赛季页面打开后，将最大可重试次数重置为3
             pyautogui.moveTo(competition_season_location, duration=0.5)
             pyautogui.click(clicks=1)
             print('大赛季页面已打开')
@@ -160,18 +162,20 @@ def look_top():
         else:
             if max_retry_count:
                 max_retry_count -= 1  # 最大可重试次数-1
+                print('大赛季页面未正常打开，继续尝试')
                 look_top()  # 重新调用 look_top() 函数
             else:
                 # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
                 print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
                 close_battleofballs()  # 关闭球球大作战应用
                 open_battleofballs()  # 打开球球大作战应用
+                max_retry_count = 3  # 球球大作战重新打开后，将最大可重试次数重置为3
                 look_top()  # 重新调用 look_top() 函数
     else:
         print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
         pyautogui.press('b')  # 返回游戏主窗口界面
         pyautogui.press('x', presses=2)  # 关闭游戏启动后延时显示的弹窗
-        look_top()  # 球球大作战排行榜图标未正常显示，需要重新调用 look_top() 函数
+        look_top()  # 排行榜图标未正常显示，需要重新调用 look_top() 函数
 
 
 def screenshot(image):
@@ -331,14 +335,16 @@ def generate_message(ocr_top_data):
         # 判断当前和历史段位(星星数量)是否都为数字，是的话就计算
         print(key, value, history_stars, today_history_stars)
         if value.isdigit():
+            # 计算用户新增星星数量
             if history_stars.isdigit():
-                delta_stars = int(value) - int(history_stars)  # 用户新增星星数量
+                delta_stars = int(value) - int(history_stars)
             elif history_stars:
                 delta_stars = int(value)  # 历史段位不为空，是超神以下，用户新增星星数量等于当前星星数量
             else:
                 delta_stars = '-'  # 历史段位为空串，无数据，用户新增星星数量等于'-'
+            # 用户今日新增星星数量
             if today_history_stars.isdigit():
-                today_delta_stars = int(value) - int(today_history_stars)  # 用户今日新增星星数量
+                today_delta_stars = int(value) - int(today_history_stars)
             elif today_history_stars:
                 today_delta_stars = int(value)  # 历史段位不为空，是超神以下，用户今日新增星星数量等于当前星星数量
             else:
