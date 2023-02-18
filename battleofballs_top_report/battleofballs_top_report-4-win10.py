@@ -42,8 +42,6 @@ def open_battleofballs():
         battleofballs_window_image = 'images/battleofballs_window-win10.png'  # 球球大作战主窗口
         battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
-            time.sleep(2)  # 等待游戏启动
-            pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键F，关闭游戏启动后的所有弹窗
             top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
             top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
             if top_location:
@@ -52,6 +50,8 @@ def open_battleofballs():
                 print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
             else:
                 print('球球大作战已打开，但排行榜图标未正常显示，继续尝试')
+                time.sleep(2)  # 等待游戏启动
+                pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键F，关闭游戏启动后的所有弹窗
                 open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
         else:
             battleofballs_image = 'images/battleofballs-win10.png'  # 球球大作战应用
@@ -410,6 +410,7 @@ def generate_message(ocr_top_data):
         nonlocal top_data, ocr_top_data, message
         t_top_data = [[key, value] for key, value in ocr_top_data.items()]
         first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
+        print(f'当前段位排行榜第一名：{first_name}，段位：{first_stars}')
         # 判断是否有排行榜历史数据，有就获取昨日数据
         if top_data:
             day_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 昨日历史数据
@@ -451,7 +452,7 @@ def generate_message(ocr_top_data):
                 for i in range(0, 24, 4):
                     tmp_count_stars = count_stars[i:i + 4]
                     sum_stars = sum([int(i) for i in tmp_count_stars if i.isdigit()])
-                    message += '{:0>2}-{:0>2}(共计{}): {}\n'.format(str(i), str(i + 4), sum_stars, ' '.join(tmp_count_stars))
+                    message += '{:0>2}-{:0>2}(共计{:>2})：{}\n'.format(str(i), str(i + 4), sum_stars, ' '.join(tmp_count_stars))
 
     # 判断是否存在排行榜历史数据文件，有就读取历史数据文件，没有则将历史数据设置为一个空字典
     if top_data_file.is_file():
@@ -499,7 +500,6 @@ def task():
     # 裁切图像指定区域，只识别排行榜前三名
     # ocr_box = (90, 180, 1200, 520)  # 排行榜前三名，识别排名、用户名、段位
     # ocr_box = (385, 220, 1200, 520)  # 排行榜前三名，识别用户名、段位
-    # ocr_box = (1080, 220, 1200, 520)  # 排行榜前三名，只识别段位(星星数)
     ocr_box = (385, 220, 1200, 720)  # 排行榜前五名，识别用户名、段位
     ocr_result = ocr(screenshot_image, ocr_box)  # OCR 识别
     message_content = generate_message(ocr_result)  # 生成信息内容
