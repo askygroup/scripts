@@ -295,6 +295,164 @@ def update_history_top():
 
 def generate_message(ocr_top_data):
     """读取 OCR 识别到的文本，生成信息内容"""
+    global ft_date_time
+
+    def new_top_message():
+        """生成最新段位排行榜信息"""
+        nonlocal top_data, ocr_top_data, message
+        long_name_length = len(max([k for k in ocr_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
+        sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
+        message += '\n最新段位排行榜：\n'
+        message += '{:<4}{}{:<6}{:>4}\n'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '日新增(半)')
+        # 加入排行榜信息
+        count = 1
+        for key, value in ocr_top_data.items():
+            if count > 3:  # 只加入排行榜前三名信息
+                break
+            # 判断是否有排行榜历史数据，有就获取用户的历史段位(星星数量)，没有就将历史数据设置为空字符串
+            if top_data:
+                history_ft_date_time = [k for k in top_data][-1]  # 最近一次的历史数据
+                history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
+                day_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 当日历史数据，凌晨00:10前获取的是前一天的数据
+                if day_history_data:
+                    day_history_ft_date_time = day_history_data[0]  # 用户当日的第一条历史数据
+                    day_history_stars = top_data[day_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
+                    if count == 1:  # 只打印一次
+                        print(f'当日的第一条历史数据：{day_history_ft_date_time}: {top_data[day_history_ft_date_time]}')
+                        print(f'最近一次的历史数据：{history_ft_date_time}: {top_data[history_ft_date_time]}')
+                else:
+                    day_history_stars = ''
+            else:
+                history_stars = ''
+                day_history_stars = ''
+            # 判断当前和历史段位(星星数量)是否都为数字，是的话就计算
+            print(key, value, history_stars, day_history_stars)
+            if value.isdigit():
+                # 计算用户新增星星数量
+                if history_stars.isdigit():
+                    delta_stars = int(value) - int(history_stars)
+                elif history_stars:
+                    delta_stars = int(value)  # 历史段位不为空，是超神以下，用户新增星星数量等于当前星星数量
+                else:
+                    delta_stars = '-'  # 历史段位为空串，无数据，用户新增星星数量等于'-'
+                # 用户当日新增星星数量
+                if day_history_stars.isdigit():
+                    day_delta_stars = int(value) - int(day_history_stars)
+                elif day_history_stars:
+                    day_delta_stars = int(value)  # 历史段位不为空，是超神以下，用户当日新增星星数量等于当前星星数量
+                else:
+                    day_delta_stars = '-'  # 历史段位为空串，无数据，用户当日新增星星数量等于'-'
+            else:
+                delta_stars = '-'
+                day_delta_stars = '-'
+
+            message += '{:<8}{}{:<6}{:>8}({})\n'.format(count, key + sep * (long_name_length - len(key)), value, day_delta_stars, delta_stars)
+            count += 1
+
+    def history_top_message():
+        """生成历史最高段位排行榜信息"""
+        nonlocal top_data, ocr_top_data, message
+        # 判断是否有排行榜历史数据，有就获取历史最高段位(星星数量)
+        current_month = datetime.datetime.now().strftime('%Y-%m')  # 当前月份 2023-02
+        if top_data:
+            history_top = top_data.get(current_month)
+            # 判断是否有历史最高段位数据
+            if history_top:
+                tmp_top_data = [[key, value] for key, value in history_top.items()]
+                history_top_name, history_top_stars = tmp_top_data[0][0], tmp_top_data[0][1]  # 历史最高段位
+                t_top_data = [[key, value] for key, value in ocr_top_data.items()]
+                first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
+                print(f'历史最高排行榜第一名：{history_top_name}，段位：{history_top_stars}')
+                print(f'当前段位排行榜第一名：{first_name}，段位：{first_stars}')
+                message += f'\n历史最高段位：\n'
+                # print(history_top_stars, first_stars)
+
+                # 判断当前和历史最高的段位(星星数量)是否都为数字，是的话就计算
+                if first_stars.isdigit() and history_top_stars.isdigit():
+                    # 当月的总天数
+                    next_month_first_day = (datetime.date.today().replace(day=1) + datetime.timedelta(days=32)).replace(
+                        day=1)
+                    current_month_first_day = datetime.date.today().replace(day=1)
+                    current_month_days = (next_month_first_day - current_month_first_day).days
+                    # 平均每天需要升级的星星数量，超神以下的段位数暂不计算在内
+                    # 青铜3颗、白银4颗、黄金两段8颗，共计15颗；月初段位重置后最高为白金段位，白金以下暂不计算在内
+                    # 白金两段10颗、钻石三段15颗、大师三段15颗、王者三段17颗(一段5颗、二三段6颗)，共计57颗
+                    day_average_stars = math.ceil((int(history_top_stars) + 1) / current_month_days)
+                    hour_average_stars = math.ceil(day_average_stars / 24)
+                    # 今日目标星星数量
+                    today_target_stars = day_average_stars * datetime.date.today().day
+                    message += '{:<5}{:<5}{}\n'.format('总目标', '日目标', '日平均(时)')
+                    message += '{:<9}{:<9}{}({})\n'.format(int(history_top_stars) + 1, today_target_stars, day_average_stars, hour_average_stars)
+
+                    # 距离历史最高还差多少颗星星
+                    remain_stars = int(history_top_stars) - int(first_stars) + 1
+                    # 距离今天目标还差多少颗星星
+                    if int(first_stars) < today_target_stars:
+                        today_remain_stars = today_target_stars - int(first_stars)
+                    elif int(first_stars) == today_target_stars:
+                        today_remain_stars = '已达标'
+                    else:
+                        today_remain_stars = f'超额完成 {-(today_target_stars - int(first_stars))}'
+                    # 当月剩余天数(包含当天，按小时折算)
+                    remain_days = current_month_days - datetime.date.today().day
+                    current_hour = datetime.datetime.today().hour
+                    remain_days += (24 - current_hour) / 24
+                    # 预计剩余天数每天需要升级的星星数量
+                    remain_day_average_stars = math.ceil(remain_stars / remain_days)
+                    remain_hour_average_stars = math.ceil(remain_day_average_stars / 24)
+                    message += '{:<5}{:<5}{}\n'.format('总差距', '日差距', '日需平均(时)')
+                    message += '{:<9}{:<9}{}({})\n'.format(remain_stars, today_remain_stars, remain_day_average_stars, remain_hour_average_stars)
+                else:
+                    message += f'当前段位排行榜第一名段位较低 {first_stars}，超神以下暂不计算\n'
+
+    def count_stars_message():
+        """生成昨日段位升级效率统计信息"""
+        nonlocal top_data, ocr_top_data, message
+        t_top_data = [[key, value] for key, value in ocr_top_data.items()]
+        first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
+        # 判断是否有排行榜历史数据，有就获取昨日数据
+        if top_data:
+            day_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 昨日历史数据
+            # print(day_history_data)
+            if day_history_data:
+                message += f'\n昨日段位升级效率统计：\n'
+                count_hours = ['{:0>2}'.format(i) for i in range(0, 24)]
+                # 用户昨日段位数据
+                day_stars = {}  # 星星数量
+                for hour in count_hours:
+                    hour_history_data = [k for k in top_data if k.startswith(f'{ft_date_time.split()[0]} {hour}')]
+                    if hour_history_data:
+                        hour_history_ft_date_time = hour_history_data[0]  # 当前小时的第一条历史数据
+                        hour_history_stars = top_data[hour_history_ft_date_time].get(first_name, '')  # 如果未获取到历史数据则返回空字符串
+                    else:
+                        hour_history_ft_date_time = hour
+                        hour_history_stars = ''
+                    day_stars[hour_history_ft_date_time] = hour_history_stars
+                day_stars['24'] = first_stars  # 今天的第一条历史数据
+                print(f'昨日每小时段位历史数据：{day_stars}')
+                # 统计昨日段位升级效率
+                cache_hour = day_history_data[0]  # 昨天的第一条历史数据的时间
+                cache_stars = day_stars[cache_hour]  # 昨天的第一条历史数据
+                count_stars = []  # 统计段位升级效率
+                day_stars.pop(cache_hour)  # 去除昨天的第一条历史数据
+                for stars in day_stars.values():
+                    if stars.isdigit():
+                        if cache_stars.isdigit():
+                            count_stars.append(str(int(stars) - int(cache_stars)))
+                        elif cache_stars:
+                            count_stars.append(stars)  # 历史段位不为空，是超神以下，用户新增星星数量等于当前星星数量
+                        else:
+                            count_stars.append('-')  # 历史段位为空串，无数据，用户新增星星数量等于'-'
+                    else:
+                        count_stars.append('-')  # 当前段位是超神以下，用户新增星星数量等于'-'
+                    cache_stars = stars
+                print(f'昨日每小时段位升级效率：{count_stars}')
+                # 生成昨日段位升级效率统计信息
+                for i in range(0, 24, 4):
+                    tmp_count_stars = count_stars[i:i + 4]
+                    sum_stars = sum([int(i) for i in tmp_count_stars if i.isdigit()])
+                    message += '{:0>2}-{:0>2}(共计{}): {}\n'.format(str(i), str(i + 4), sum_stars, ' '.join(tmp_count_stars))
+
     # 判断是否存在排行榜历史数据文件，有就读取历史数据文件，没有则将历史数据设置为一个空字典
     if top_data_file.is_file():
         with open(top_data_file, 'r', encoding='utf-8') as file:
@@ -307,107 +465,15 @@ def generate_message(ocr_top_data):
     # 凌晨0点会有特殊提醒消息
     if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 10:
         message += '\n新的一天开始喽，继续加油哦！\n'
+        ft_date_time = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
+        # 昨日段位升级效率统计
+        count_stars_message()
 
     # 最新段位排行榜
-    long_name_length = len(max([k for k in ocr_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
-    sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
-    message += '\n最新段位排行榜：\n'
-    message += '{:<4}{}{:<6}{:>4}\n'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '日新增')
-    # 加入排行榜信息
-    count = 1
-    for key, value in ocr_top_data.items():
-        # 判断是否有排行榜历史数据，有就获取用户的历史段位(星星数量)，没有就将历史数据设置为空字符串
-        if top_data:
-            history_ft_date_time = [k for k in top_data][-1]  # 最近一次的历史数据
-            history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
-            today_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 今日历史数据
-            if today_history_data:
-                today_history_ft_date_time = today_history_data[0]  # 用户今日的第一条历史数据
-                today_history_stars = top_data[today_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
-                if count == 1:  # 只打印一次
-                    print(f'今日的第一条历史数据：{today_history_ft_date_time}: {top_data[today_history_ft_date_time]}')
-                    print(f'最近一次的历史数据：{history_ft_date_time}: {top_data[history_ft_date_time]}')
-            else:
-                today_history_stars = ''
-        else:
-            history_stars = ''
-            today_history_stars = ''
-        # 判断当前和历史段位(星星数量)是否都为数字，是的话就计算
-        print(key, value, history_stars, today_history_stars)
-        if value.isdigit():
-            # 计算用户新增星星数量
-            if history_stars.isdigit():
-                delta_stars = int(value) - int(history_stars)
-            elif history_stars:
-                delta_stars = int(value)  # 历史段位不为空，是超神以下，用户新增星星数量等于当前星星数量
-            else:
-                delta_stars = '-'  # 历史段位为空串，无数据，用户新增星星数量等于'-'
-            # 用户今日新增星星数量
-            if today_history_stars.isdigit():
-                today_delta_stars = int(value) - int(today_history_stars)
-            elif today_history_stars:
-                today_delta_stars = int(value)  # 历史段位不为空，是超神以下，用户今日新增星星数量等于当前星星数量
-            else:
-                today_delta_stars = '-'  # 历史段位为空串，无数据，用户今日新增星星数量等于'-'
-        else:
-            delta_stars = '-'
-            today_delta_stars = '-'
-
-        message += '{:<8}{}{:<6}{:>8}({})\n'.format(count, key + sep * (long_name_length - len(key)), value, today_delta_stars, delta_stars)
-        count += 1
+    new_top_message()
 
     # 历史最高段位排行榜
-    # 判断是否有排行榜历史数据，有就获取历史最高段位(星星数量)
-    current_month = datetime.datetime.now().strftime('%Y-%m')  # 当前月份 2023-02
-    if top_data:
-        history_top = top_data.get(current_month)
-        # 判断是否有历史最高段位数据
-        if history_top:
-            tmp_top_data = [[key, value] for key, value in history_top.items()]
-            history_top_name, history_top_stars = tmp_top_data[0][0], tmp_top_data[0][1]  # 历史最高段位
-            t_top_data = [[key, value] for key, value in ocr_top_data.items()]
-            first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
-            print(f'历史最高排行榜第一名：{history_top_name}，段位：{history_top_stars}')
-            print(f'当前段位排行榜第一名：{first_name}，段位：{first_stars}')
-            message += f'\n历史最高段位：\n'
-            # print(history_top_stars, first_stars)
-
-            # 判断当前和历史最高的段位(星星数量)是否都为数字，是的话就计算
-            if first_stars.isdigit() and history_top_stars.isdigit():
-                # 当月的总天数
-                next_month_first_day = (datetime.date.today().replace(day=1) + datetime.timedelta(days=32)).replace(day=1)
-                current_month_first_day = datetime.date.today().replace(day=1)
-                current_month_days = (next_month_first_day - current_month_first_day).days
-                # 平均每天需要升级的星星数量，超神以下的段位数暂不计算在内
-                # 青铜3颗、白银4颗、黄金两段8颗，共计15颗；月初段位重置后最高为白金段位，白金以下暂不计算在内
-                # 白金两段10颗、钻石三段15颗、大师三段15颗、王者三段17颗(一段5颗、二三段6颗)，共计57颗
-                day_average_stars = math.ceil((int(history_top_stars) + 1) / current_month_days)
-                hour_average_stars = math.ceil(day_average_stars / 24)
-                # 今日目标星星数量
-                today_target_stars = day_average_stars * datetime.date.today().day
-                message += '{:<5}{:<5}{}\n'.format('总目标', '日目标', '日平均(时)')
-                message += '{:<9}{:<9}{}({})\n'.format(int(history_top_stars) + 1, today_target_stars, day_average_stars, hour_average_stars)
-
-                # 距离历史最高还差多少颗星星
-                remain_stars = int(history_top_stars) - int(first_stars) + 1
-                # 距离今天目标还差多少颗星星
-                if int(first_stars) < today_target_stars:
-                    today_remain_stars = today_target_stars - int(first_stars)
-                elif int(first_stars) == today_target_stars:
-                    today_remain_stars = '已达标'
-                else:
-                    today_remain_stars = f'超额完成 {-(today_target_stars - int(first_stars))}'
-                # 当月剩余天数(包含当天，按小时折算)
-                remain_days = current_month_days - datetime.date.today().day
-                current_hour = datetime.datetime.today().hour
-                remain_days += (24 - current_hour) / 24
-                # 预计剩余天数每天需要升级的星星数量
-                remain_day_average_stars = math.ceil(remain_stars / remain_days)
-                remain_hour_average_stars = math.ceil(remain_day_average_stars / 24)
-                message += '{:<5}{:<5}{}\n'.format('总差距', '日差距', '日需平均(时)')
-                message += '{:<9}{:<9}{}({})\n'.format(remain_stars, today_remain_stars, remain_day_average_stars, remain_hour_average_stars)
-            else:
-                message += f'当前段位排行榜第一名段位较低 {first_stars}，超神以下暂不计算\n'
+    history_top_message()
 
     print('新的信息内容已生成')
     # print(message)
@@ -432,8 +498,9 @@ def task():
     watermark(screenshot_image)  # 给截图加水印
     # 裁切图像指定区域，只识别排行榜前三名
     # ocr_box = (100, 200, 1310, 570)  # 排行榜前三名，识别排名、用户名、段位
-    ocr_box = (420, 240, 1310, 570)  # 排行榜前三名，识别用户名、段位
+    # ocr_box = (420, 240, 1310, 570)  # 排行榜前三名，识别用户名、段位
     # ocr_box = (1185, 240, 1310, 570)  # 排行榜前三名，只识别段位(星星数)
+    ocr_box = (420, 240, 1310, 780)  # 排行榜前五名，识别用户名、段位
     ocr_result = ocr(screenshot_image, ocr_box)  # OCR 识别
     message_content = generate_message(ocr_result)  # 生成信息内容
     update_top_data(ft_date_time, ocr_result)  # 更新排行榜历史数据文件

@@ -75,7 +75,7 @@ def main():
     try:
         while True:
             lucky_food = random.choices(foods, weights)[0]
-            print(f'今天吃：{lucky_food}\r', end='')
+            print(f'今天吃：{lucky_food}            \r', end='')
     except KeyboardInterrupt:
         print(f'今天吃：{lucky_food}')
 
