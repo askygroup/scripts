@@ -295,11 +295,9 @@ def update_history_top():
 
 def generate_message(ocr_top_data):
     """读取 OCR 识别到的文本，生成信息内容"""
-    global ft_date_time
-
     def new_top_message():
         """生成最新段位排行榜信息"""
-        nonlocal top_data, ocr_top_data, message
+        nonlocal top_data, ocr_top_data, message, current_ft_date_time
         long_name_length = len(max([k for k in ocr_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
         sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
         message += '\n最新段位排行榜：\n'
@@ -313,7 +311,7 @@ def generate_message(ocr_top_data):
             if top_data:
                 history_ft_date_time = [k for k in top_data][-1]  # 最近一次的历史数据
                 history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
-                day_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 当日历史数据，凌晨00:10前获取的是前一天的数据
+                day_history_data = [k for k in top_data if k.startswith(current_ft_date_time.split()[0])]  # 当日历史数据，凌晨00:10前获取的是前一天的数据
                 if day_history_data:
                     day_history_ft_date_time = day_history_data[0]  # 用户当日的第一条历史数据
                     day_history_stars = top_data[day_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
@@ -326,7 +324,7 @@ def generate_message(ocr_top_data):
                 history_stars = ''
                 day_history_stars = ''
             # 判断当前和历史段位(星星数量)是否都为数字，是的话就计算
-            print(key, value, history_stars, day_history_stars)
+            print(f'当前和历史段位数据：{key} {value} {history_stars} {day_history_stars}')
             if value.isdigit():
                 # 计算用户新增星星数量
                 if history_stars.isdigit():
@@ -407,13 +405,13 @@ def generate_message(ocr_top_data):
 
     def count_stars_message():
         """生成昨日段位升级效率统计信息"""
-        nonlocal top_data, ocr_top_data, message
+        nonlocal top_data, ocr_top_data, message, current_ft_date_time
         t_top_data = [[key, value] for key, value in ocr_top_data.items()]
         first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
-        print(f'当前段位排行榜第一名：{first_name}，段位：{first_stars}')
+        print(f'当前段位排行榜第一名：{first_name}')
         # 判断是否有排行榜历史数据，有就获取昨日数据
         if top_data:
-            day_history_data = [k for k in top_data if k.startswith(ft_date_time.split()[0])]  # 昨日历史数据
+            day_history_data = [k for k in top_data if k.startswith(current_ft_date_time.split()[0])]  # 昨日历史数据
             # print(day_history_data)
             if day_history_data:
                 message += f'\n昨日段位升级效率统计：\n'
@@ -421,7 +419,7 @@ def generate_message(ocr_top_data):
                 # 用户昨日段位数据
                 day_stars = {}  # 星星数量
                 for hour in count_hours:
-                    hour_history_data = [k for k in top_data if k.startswith(f'{ft_date_time.split()[0]} {hour}')]
+                    hour_history_data = [k for k in top_data if k.startswith(f'{current_ft_date_time.split()[0]} {hour}')]
                     if hour_history_data:
                         hour_history_ft_date_time = hour_history_data[0]  # 当前小时的第一条历史数据
                         hour_history_stars = top_data[hour_history_ft_date_time].get(first_name, '')  # 如果未获取到历史数据则返回空字符串
@@ -430,7 +428,7 @@ def generate_message(ocr_top_data):
                         hour_history_stars = ''
                     day_stars[hour_history_ft_date_time] = hour_history_stars
                 day_stars['24'] = first_stars  # 今天的第一条历史数据
-                print(f'昨日每小时段位历史数据：{day_stars}')
+                print(f'{first_name} 昨日每小时段位历史数据：{day_stars}')
                 # 统计昨日段位升级效率
                 cache_hour = day_history_data[0]  # 昨天的第一条历史数据的时间
                 cache_stars = day_stars[cache_hour]  # 昨天的第一条历史数据
@@ -447,7 +445,7 @@ def generate_message(ocr_top_data):
                     else:
                         count_stars.append('-')  # 当前段位是超神以下，用户新增星星数量等于'-'
                     cache_stars = stars
-                print(f'昨日每小时段位升级效率：{count_stars}')
+                print(f'{first_name} 昨日每小时段位升级效率：{count_stars}')
                 # 生成昨日段位升级效率统计信息
                 for i in range(0, 24, 4):
                     tmp_count_stars = count_stars[i:i + 4]
@@ -466,9 +464,11 @@ def generate_message(ocr_top_data):
     # 凌晨0点会有特殊提醒消息
     if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 10:
         message += '\n新的一天开始喽，继续加油哦！\n'
-        ft_date_time = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
+        current_ft_date_time = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
         # 昨日段位升级效率统计
         count_stars_message()
+    else:
+        current_ft_date_time = ft_date_time
 
     # 最新段位排行榜
     new_top_message()
