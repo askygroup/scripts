@@ -324,7 +324,7 @@ def generate_message(ocr_top_data):
                 history_stars = ''
                 day_history_stars = ''
             # 判断当前和历史段位(星星数量)是否都为数字，是的话就计算
-            print(f'当前和历史段位数据：{key} {value} {history_stars} {day_history_stars}')
+            print(f'第 {count} 名，当前和历史段位数据：{key} {value} {history_stars} {day_history_stars}')
             if value.isdigit():
                 # 计算用户新增星星数量
                 if history_stars.isdigit():
@@ -450,6 +450,7 @@ def generate_message(ocr_top_data):
                 for i in range(0, 24, 4):
                     tmp_count_stars = count_stars[i:i + 4]
                     sum_stars = sum([int(i) for i in tmp_count_stars if i.isdigit()])
+                    tmp_count_stars = ['{:0>2}'.format(i) for i in tmp_count_stars]
                     message += '{:0>2}-{:0>2}(共计{:>2})：{}\n'.format(str(i), str(i + 4), sum_stars, ' '.join(tmp_count_stars))
 
     # 判断是否存在排行榜历史数据文件，有就读取历史数据文件，没有则将历史数据设置为一个空字典
@@ -516,7 +517,7 @@ def main():
     """主函数"""
     global tmp_start_time, ft_date_time
     # exec_task_time = list(range(0, 60, 20))  # 整点开始，每二十分钟执行一次
-    exec_task_time = [0, 30]  # 执行任务的时间分钟，整点、5分、30分执行
+    exec_task_time = [0, 30]  # 执行任务的时间分钟，整点、30分执行
     wait_time = 60  # 程序等待时间
     repost_count = 1  # 记录播报次数
     while True:
