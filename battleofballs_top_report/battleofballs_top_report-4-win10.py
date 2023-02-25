@@ -42,17 +42,9 @@ def open_battleofballs():
         battleofballs_window_image = 'images/battleofballs_window-win10.png'  # 球球大作战主窗口
         battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
-            top_image = 'images/top-win10.png'  # 球球大作战排行榜图标
-            top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
-            if top_location:
-                # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
-                tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
-                print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
-            else:
-                print('球球大作战已打开，但排行榜图标未正常显示，继续尝试')
-                time.sleep(2)  # 等待游戏启动
-                pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键F，关闭游戏启动后的所有弹窗
-                open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
+            # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
+            tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+            print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
         else:
             battleofballs_image = 'images/battleofballs-win10.png'  # 球球大作战应用
             battleofballs_location = pyautogui.locateCenterOnScreen(battleofballs_image, confidence=0.85, minSearchTime=2)
@@ -91,7 +83,7 @@ def look_history_top():
         more_top_image = 'images/more_top-win10.png'  # 更多排名图标
         more_top_location = pyautogui.locateCenterOnScreen(more_top_image, confidence=0.85, minSearchTime=2)
         if more_top_location:
-            max_retry_count = 3  # 更多排名页面打开后，将最大可重试次数重置为3
+            max_retry_count = 5  # 更多排名页面打开后，重置最大可重试次数
             pyautogui.moveTo(more_top_location, duration=0.5)
             pyautogui.click(clicks=1)
             print('更多排名页面已打开')
@@ -116,16 +108,23 @@ def look_history_top():
                 look_top()  # 重新调用 look_top() 函数
             else:
                 # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
-                print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
+                print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启模拟器')
                 close_battleofballs()  # 关闭球球大作战应用
                 open_battleofballs()  # 打开球球大作战应用
-                max_retry_count = 3  # 球球大作战重新打开后，将最大可重试次数重置为3
+                max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 look_history_top()  # 重新调用 look_history_top() 函数
     else:
-        print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
-        pyautogui.press('b')  # 返回游戏主窗口界面
-        pyautogui.press('x', presses=2)  # 关闭游戏启动后延时显示的弹窗
-        look_history_top()  # 排行榜图标未正常显示，需要重新调用 look_history_top() 函数
+        if max_retry_count:
+            max_retry_count -= 1  # 最大可重试次数-1
+            print('排行榜图标未正常显示，继续尝试')
+            pyautogui.press('b')  # 返回游戏主窗口界面
+            pyautogui.press('x', presses=2)  # 关闭游戏启动后的弹窗
+        else:
+            print('排行榜图标未正常显示，球球大作战无法正常使用，需要重启模拟器')
+            close_battleofballs()  # 关闭球球大作战应用
+            open_battleofballs()  # 打开球球大作战应用
+            max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
+        look_history_top()  # 重新调用 look_history_top() 函数
 
 
 def look_top():
@@ -141,7 +140,7 @@ def look_top():
         competition_season_image = 'images/competition_season-win10.png'  # 大赛季页面图标
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
         if competition_season_location:
-            max_retry_count = 3  # 大赛季页面打开后，将最大可重试次数重置为3
+            max_retry_count = 5  # 大赛季页面打开后，重置最大可重试次数
             pyautogui.moveTo(competition_season_location, duration=0.5)
             pyautogui.click(clicks=1)
             print('大赛季页面已打开')
@@ -166,16 +165,23 @@ def look_top():
                 look_top()  # 重新调用 look_top() 函数
             else:
                 # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
-                print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启下模拟器')
+                print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启模拟器')
                 close_battleofballs()  # 关闭球球大作战应用
                 open_battleofballs()  # 打开球球大作战应用
-                max_retry_count = 3  # 球球大作战重新打开后，将最大可重试次数重置为3
+                max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 look_top()  # 重新调用 look_top() 函数
     else:
-        print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
-        pyautogui.press('b')  # 返回游戏主窗口界面
-        pyautogui.press('x', presses=2)  # 关闭游戏启动后延时显示的弹窗
-        look_top()  # 排行榜图标未正常显示，需要重新调用 look_top() 函数
+        if max_retry_count:
+            max_retry_count -= 1  # 最大可重试次数-1
+            print('排行榜图标未正常显示，继续尝试')
+            pyautogui.press('b')  # 返回游戏主窗口界面
+            pyautogui.press('x', presses=2)  # 关闭游戏启动后的弹窗
+        else:
+            print('排行榜图标未正常显示，球球大作战无法正常使用，需要重启下模拟器')
+            close_battleofballs()  # 关闭球球大作战应用
+            open_battleofballs()  # 打开球球大作战应用
+            max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
+        look_top()  # 重新调用 look_top() 函数
 
 
 def screenshot(image):
@@ -301,7 +307,7 @@ def generate_message(ocr_top_data):
         long_name_length = len(max([k for k in ocr_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
         sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
         message += '\n最新段位排行榜：\n'
-        message += '{:<4}{}{:<6}{:>4}\n'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '日新增(半)')
+        message += '{:<4}{}{:<6}{:>4}\n'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '日新增(近)')
         # 加入排行榜信息
         count = 1
         for key, value in ocr_top_data.items():
@@ -352,6 +358,7 @@ def generate_message(ocr_top_data):
         nonlocal top_data, ocr_top_data, message
         # 判断是否有排行榜历史数据，有就获取历史最高段位(星星数量)
         current_month = datetime.datetime.now().strftime('%Y-%m')  # 当前月份 2023-02
+        one_day_hours = 24  # 一天的小时数
         if top_data:
             history_top = top_data.get(current_month)
             # 判断是否有历史最高段位数据
@@ -368,72 +375,80 @@ def generate_message(ocr_top_data):
                 # 判断当前和历史最高的段位(星星数量)是否都为数字，是的话就计算
                 if first_stars.isdigit() and history_top_stars.isdigit():
                     # 当月的总天数
-                    next_month_first_day = (datetime.date.today().replace(day=1) + datetime.timedelta(days=32)).replace(
-                        day=1)
+                    next_month_first_day = (datetime.date.today().replace(day=1) + datetime.timedelta(days=32)).replace(day=1)
                     current_month_first_day = datetime.date.today().replace(day=1)
                     current_month_days = (next_month_first_day - current_month_first_day).days
                     # 平均每天需要升级的星星数量，超神以下的段位数暂不计算在内
                     # 青铜3颗、白银4颗、黄金两段8颗，共计15颗；月初段位重置后最高为白金段位，白金以下暂不计算在内
                     # 白金两段10颗、钻石三段15颗、大师三段15颗、王者三段17颗(一段5颗、二三段6颗)，共计57颗
-                    day_average_stars = math.ceil((int(history_top_stars) + 1) / current_month_days)
-                    hour_average_stars = math.ceil(day_average_stars / 24)
+                    day_average_stars = (int(history_top_stars) + 1) / current_month_days
+                    hour_average_stars = day_average_stars / one_day_hours
                     # 今日目标星星数量
                     today_target_stars = day_average_stars * datetime.date.today().day
-                    message += '{:<5}{:<5}{}\n'.format('总目标', '日目标', '日平均(时)')
-                    message += '{:<9}{:<9}{}({})\n'.format(int(history_top_stars) + 1, today_target_stars, day_average_stars, hour_average_stars)
+                    # 今时目标星星数量
+                    hour_target_stars = math.ceil(today_target_stars - (one_day_hours - datetime.datetime.now().hour - 1) * hour_average_stars)
+                    today_target_stars = math.ceil(today_target_stars)
+                    hour_average_stars = math.ceil(hour_average_stars)
+                    day_average_stars = math.ceil(day_average_stars)
+                    message += '{:<5}{:<10}{}\n'.format('总目标', '日目标(时)', '日平均(时)')
+                    message += '{:<9}{}({}){:>9}({})\n'.format(int(history_top_stars) + 1, today_target_stars, hour_target_stars, day_average_stars, hour_average_stars)
 
                     # 距离历史最高还差多少颗星星
                     remain_stars = int(history_top_stars) - int(first_stars) + 1
-                    # 距离今天目标还差多少颗星星
+                    # 距离今日、今时目标还差多少颗星星
                     if int(first_stars) < today_target_stars:
                         today_remain_stars = today_target_stars - int(first_stars)
+                        hour_remain_stars = hour_target_stars - int(first_stars)
                     elif int(first_stars) == today_target_stars:
                         today_remain_stars = '已达标'
+                        hour_remain_stars = '已达标'
                     else:
-                        today_remain_stars = f'超额完成 {-(today_target_stars - int(first_stars))}'
-                    # 当月剩余天数(包含当天，按小时折算)
+                        today_remain_stars = f'超 {-(today_target_stars - int(first_stars))}'
+                        hour_remain_stars = f'超 {-(hour_target_stars - int(first_stars))}'
+                    # 当月剩余天数(包含当天，当天按小时折算)
                     remain_days = current_month_days - datetime.date.today().day
-                    current_hour = datetime.datetime.today().hour
-                    remain_days += (24 - current_hour) / 24
+                    remain_days += (one_day_hours - datetime.datetime.now().hour - 1) / one_day_hours
                     # 预计剩余天数每天需要升级的星星数量
-                    remain_day_average_stars = math.ceil(remain_stars / remain_days)
-                    remain_hour_average_stars = math.ceil(remain_day_average_stars / 24)
-                    message += '{:<5}{:<5}{}\n'.format('总差距', '日差距', '日需平均(时)')
-                    message += '{:<9}{:<9}{}({})\n'.format(remain_stars, today_remain_stars, remain_day_average_stars, remain_hour_average_stars)
+                    remain_day_average_stars = remain_stars / remain_days
+                    # 预计剩余天数每小时需要升级的星星数量
+                    remain_hour_average_stars = math.ceil(remain_day_average_stars / one_day_hours)
+                    remain_day_average_stars = math.ceil(remain_day_average_stars)
+                    message += '{:<5}{:<10}{}\n'.format('总差距', '日差距(时)', '日需平均(时)')
+                    message += '{:<9}{}({}){:>9}({})\n'.format(remain_stars, today_remain_stars, hour_remain_stars, remain_day_average_stars, remain_hour_average_stars)
                 else:
                     message += f'当前段位排行榜第一名段位较低 {first_stars}，超神以下暂不计算\n'
 
     def count_stars_message():
-        """生成昨日段位升级效率统计信息"""
-        nonlocal top_data, ocr_top_data, message, current_ft_date_time
+        """生成当日段位升级效率统计信息"""
+        nonlocal top_data, ocr_top_data, message, current_ft_date_time, current_hour
         t_top_data = [[key, value] for key, value in ocr_top_data.items()]
         first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
         print(f'当前段位排行榜第一名：{first_name}')
-        # 判断是否有排行榜历史数据，有就获取昨日数据
+        # 判断是否有排行榜历史数据，有就获取当日数据
         if top_data:
-            day_history_data = [k for k in top_data if k.startswith(current_ft_date_time.split()[0])]  # 昨日历史数据
+            day_history_data = [k for k in top_data if k.startswith(current_ft_date_time.split()[0])]  # 当日历史数据
             # print(day_history_data)
             if day_history_data:
-                message += f'\n昨日段位升级效率统计：\n'
-                count_hours = ['{:0>2}'.format(i) for i in range(0, 24)]
-                # 用户昨日段位数据
+                message += f'\n段位升级效率统计：\n'
+                count_hours = ['{:0>2}'.format(i) for i in range(0, current_hour + 1)]
+                # 用户当日段位数据
                 day_stars = {}  # 星星数量
                 for hour in count_hours:
-                    hour_history_data = [k for k in top_data if k.startswith(f'{current_ft_date_time.split()[0]} {hour}')]
+                    hour_ft_date_time = f'{current_ft_date_time.split()[0]} {hour}'
+                    hour_history_data = [k for k in top_data if k.startswith(hour_ft_date_time)]
                     if hour_history_data:
-                        hour_history_ft_date_time = hour_history_data[0]  # 当前小时的第一条历史数据
-                        hour_history_stars = top_data[hour_history_ft_date_time].get(first_name, '')  # 如果未获取到历史数据则返回空字符串
+                        hour_ft_date_time = hour_history_data[0]  # 当前小时的第一条历史数据
+                        hour_history_stars = top_data[hour_ft_date_time].get(first_name, '')  # 如果未获取到历史数据则返回空字符串
                     else:
-                        hour_history_ft_date_time = hour
                         hour_history_stars = ''
-                    day_stars[hour_history_ft_date_time] = hour_history_stars
-                day_stars['24'] = first_stars  # 今天的第一条历史数据
-                print(f'{first_name} 昨日每小时段位历史数据：{day_stars}')
-                # 统计昨日段位升级效率
-                cache_hour = day_history_data[0]  # 昨天的第一条历史数据的时间
-                cache_stars = day_stars[cache_hour]  # 昨天的第一条历史数据
+                    day_stars[hour_ft_date_time.split(':')[0]] = hour_history_stars
+                day_stars[f'{current_ft_date_time.split()[0]} {current_hour}'] = first_stars  # 当前时间段位数据
+                print(f'{first_name} 当日每小时段位历史数据：{day_stars}')
+                # 统计当日段位升级效率
+                cache_hour = [k for k in day_stars][0]  # 当天的第一条历史数据的时间
+                cache_stars = day_stars[cache_hour]  # 当天的第一条历史数据
                 count_stars = []  # 统计段位升级效率
-                day_stars.pop(cache_hour)  # 去除昨天的第一条历史数据
+                day_stars.pop(cache_hour)  # 去除当天的第一条历史数据
                 for stars in day_stars.values():
                     if stars.isdigit():
                         if cache_stars.isdigit():
@@ -445,12 +460,13 @@ def generate_message(ocr_top_data):
                     else:
                         count_stars.append('-')  # 当前段位是超神以下，用户新增星星数量等于'-'
                     cache_stars = stars
-                print(f'{first_name} 昨日每小时段位升级效率：{count_stars}')
-                # 生成昨日段位升级效率统计信息
-                for i in range(0, 24, 4):
+                print(f'{first_name} 当日每小时段位升级效率：{count_stars}')
+                # 生成当日段位升级效率统计信息
+                current_hour = current_hour - 1 if current_hour == 24 else current_hour
+                for i in range(0, current_hour + 1, 4):
                     tmp_count_stars = count_stars[i:i + 4]
                     sum_stars = sum([int(i) for i in tmp_count_stars if i.isdigit()])
-                    tmp_count_stars = ['{:0>2}'.format(i) for i in tmp_count_stars]
+                    tmp_count_stars = ['{:>2}'.format(i) for i in tmp_count_stars]
                     message += '{:0>2}-{:0>2}(共计{:>2})：{}\n'.format(str(i), str(i + 4), sum_stars, ' '.join(tmp_count_stars))
 
     # 判断是否存在排行榜历史数据文件，有就读取历史数据文件，没有则将历史数据设置为一个空字典
@@ -465,14 +481,17 @@ def generate_message(ocr_top_data):
     # 凌晨0点会有特殊提醒消息
     if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 10:
         message += '\n新的一天开始喽，继续加油哦！\n'
-        current_ft_date_time = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
-        # 昨日段位升级效率统计
-        count_stars_message()
+        current_ft_date_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
+        current_hour = 24
     else:
         current_ft_date_time = ft_date_time
+        current_hour = datetime.datetime.now().hour
 
     # 最新段位排行榜
     new_top_message()
+
+    # 当日段位升级效率统计
+    count_stars_message()
 
     # 历史最高段位排行榜
     history_top_message()
@@ -569,7 +588,7 @@ if __name__ == '__main__':
     files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
     top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
 
-    max_retry_count = 3  # 最大可重试次数
+    max_retry_count = 5  # 最大可重试次数
 
     main()  # 主函数
 
