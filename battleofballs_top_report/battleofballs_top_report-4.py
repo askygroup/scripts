@@ -18,6 +18,7 @@ from wechat import *
 
 def open_battleofballs():
     """打开雷电模拟器，然后再打开球球大作战"""
+    global max_retry_count
     # 打开雷电模拟器应用
     # ldmnq_exe = 'dnplayer.exe'
     # ldmnq_program_dir = r'C:\Software\leidian\LDPlayer4'
@@ -42,9 +43,26 @@ def open_battleofballs():
         battleofballs_window_image = 'images/battleofballs_window.png'  # 球球大作战主窗口
         battleofballs_window_location = pyautogui.locateCenterOnScreen(battleofballs_window_image, confidence=0.7, minSearchTime=2)
         if battleofballs_window_location:
-            # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
-            tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
-            print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
+            top_image = 'images/top.png'  # 球球大作战排行榜图标
+            top_location = pyautogui.locateCenterOnScreen(top_image, confidence=0.85, minSearchTime=2)
+            if top_location:
+                # 打印下球球大作战启动总耗时(球球大作战在后台已启动时，耗时10秒左右，后台未启动时，耗时20秒)
+                tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
+                print(f'球球大作战已打开，共耗时 {tmp_run_time} 秒')
+                max_retry_count = 5  # 球球大作战打开后，重置最大可重试次数
+            else:
+                if max_retry_count:
+                    max_retry_count -= 1  # 最大可重试次数-1
+                    print('球球大作战已打开，但排行榜图标未正常显示，继续尝试')
+                    time.sleep(2)  # 等待游戏启动
+                    pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键X，关闭游戏启动后的所有弹窗
+
+                else:
+                    print('排行榜图标未正常显示，球球大作战无法正常使用，需要重启模拟器')
+                    close_battleofballs()  # 关闭球球大作战应用
+                    open_battleofballs()  # 打开球球大作战应用
+                    max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
+                open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
         else:
             battleofballs_image = 'images/battleofballs.png'  # 球球大作战应用
             battleofballs_location = pyautogui.locateCenterOnScreen(battleofballs_image, confidence=0.85, minSearchTime=2)
@@ -78,7 +96,7 @@ def look_history_top():
     if top_location:
         # 打开排行榜
         print('打开排行榜')
-        pyautogui.press('t', presses=3)  # 连续快速点击3次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
+        pyautogui.press('t', presses=2, interval=0.3)  # 连续点击2次自定义键T，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
         time.sleep(1)
         more_top_image = 'images/more_top.png'  # 更多排名图标
         more_top_location = pyautogui.locateCenterOnScreen(more_top_image, confidence=0.85, minSearchTime=2)
@@ -88,9 +106,9 @@ def look_history_top():
             pyautogui.click(clicks=1)
             print('更多排名页面已打开')
             time.sleep(1)
-            pyautogui.press('f', presses=3)  # 连续快速点击3次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+            pyautogui.press('f', presses=2, interval=0.3)  # 连续点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
             time.sleep(1)
-            pyautogui.press('z', presses=3)  # 连续快速点击3次自定义键F，查看历史最高榜，兼容随机出现的榜页面情况
+            pyautogui.press('z', presses=2, interval=0.3)  # 连续点击2次自定义键Z，查看历史最高榜，兼容随机出现的榜页面情况
             time.sleep(1)
             history_top_image = 'images/history_top.png'  # 历史最高段位排行榜页面
             history_top_location = pyautogui.locateCenterOnScreen(history_top_image, confidence=0.85, minSearchTime=2)
@@ -114,17 +132,10 @@ def look_history_top():
                 max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 look_history_top()  # 重新调用 look_history_top() 函数
     else:
-        if max_retry_count:
-            max_retry_count -= 1  # 最大可重试次数-1
-            print('排行榜图标未正常显示，继续尝试')
-            pyautogui.press('b')  # 返回游戏主窗口界面
-            pyautogui.press('x', presses=2)  # 关闭游戏启动后的弹窗
-        else:
-            print('排行榜图标未正常显示，球球大作战无法正常使用，需要重启模拟器')
-            close_battleofballs()  # 关闭球球大作战应用
-            open_battleofballs()  # 打开球球大作战应用
-            max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
-        look_history_top()  # 重新调用 look_history_top() 函数
+        print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
+        pyautogui.press('b')  # 返回游戏主窗口界面
+        pyautogui.press('x', presses=2, interval=0.3)  # 连续点击2次自定义键X，关闭游戏启动后延时显示的弹窗
+        look_history_top()  # 排行榜图标未正常显示，需要重新调用 look_history_top() 函数
 
 
 def look_top():
@@ -135,7 +146,7 @@ def look_top():
     if top_location:
         # 打开排行榜
         print('打开排行榜')
-        pyautogui.press('t', presses=3)  # 连续快速点击3次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
+        pyautogui.press('t', presses=2, interval=0.3)  # 连续点击2次，兼容因关闭游戏启动后所有弹窗时，误打开游戏设置而无法打开排行榜的情况
         time.sleep(1)
         competition_season_image = 'images/competition_season.png'  # 大赛季页面图标
         competition_season_location = pyautogui.locateCenterOnScreen(competition_season_image, confidence=0.85, minSearchTime=2)
@@ -145,9 +156,9 @@ def look_top():
             pyautogui.click(clicks=1)
             print('大赛季页面已打开')
             time.sleep(1)
-            pyautogui.press('f', presses=3)  # 连续快速点击3次自定义键F，查看段位榜，兼容随机出现的榜页面情况
+            pyautogui.press('f', presses=2, interval=0.3)  # 连续点击2次自定义键F，查看段位榜，兼容随机出现的榜页面情况
             time.sleep(1)
-            pyautogui.press('h', presses=3)  # 连续快速点击3次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
+            pyautogui.press('h', presses=2, interval=0.3)  # 连续点击2次自定义键H，查看段位分榜，兼容随机出现的榜页面情况
             time.sleep(1)
             level_image = 'images/level.png'  # 大赛季段位排行榜页面
             level_location = pyautogui.locateCenterOnScreen(level_image, confidence=0.85, minSearchTime=2)
@@ -171,17 +182,10 @@ def look_top():
                 max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 look_top()  # 重新调用 look_top() 函数
     else:
-        if max_retry_count:
-            max_retry_count -= 1  # 最大可重试次数-1
-            print('排行榜图标未正常显示，继续尝试')
-            pyautogui.press('b')  # 返回游戏主窗口界面
-            pyautogui.press('x', presses=2)  # 关闭游戏启动后的弹窗
-        else:
-            print('排行榜图标未正常显示，球球大作战无法正常使用，需要重启下模拟器')
-            close_battleofballs()  # 关闭球球大作战应用
-            open_battleofballs()  # 打开球球大作战应用
-            max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
-        look_top()  # 重新调用 look_top() 函数
+        print('排行榜图标未正常显示，返回游戏主界面，继续尝试')
+        pyautogui.press('b')  # 返回游戏主窗口界面
+        pyautogui.press('x', presses=2, interval=0.3)  # 连续点击2次自定义键X，关闭游戏启动后延时显示的弹窗
+        look_top()  # 排行榜图标未正常显示，需要重新调用 look_top() 函数
 
 
 def screenshot(image):
@@ -442,7 +446,11 @@ def generate_message(ocr_top_data):
                     else:
                         hour_history_stars = ''
                     day_stars[hour_ft_date_time.split(':')[0]] = hour_history_stars
-                day_stars[f'{current_ft_date_time.split()[0]} {current_hour}'] = first_stars  # 当前时间段位数据
+                # 分钟数小于5时，只统计前一小时数据
+                if datetime.datetime.now().minute < 5:
+                    day_stars['{} {:>2}'.format(current_ft_date_time.split()[0], current_hour)] = first_stars  # 当前时间段位数据
+                else:
+                    day_stars['{} {:>2}'.format(current_ft_date_time.split()[0], current_hour + 1)] = first_stars  # 当前时间段位数据
                 print(f'{first_name} 当日每小时段位历史数据：{day_stars}')
                 # 统计当日段位升级效率
                 cache_hour = [k for k in day_stars][0]  # 当天的第一条历史数据的时间
@@ -479,7 +487,7 @@ def generate_message(ocr_top_data):
     # 生成信息内容
     message = f'【菲时报，为您播报】\n北京时间：{ft_date_time}\n'
     # 凌晨0点会有特殊提醒消息
-    if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 10:
+    if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 5:
         message += '\n新的一天开始喽，继续加油哦！\n'
         current_ft_date_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
         current_hour = 24
@@ -504,8 +512,8 @@ def generate_message(ocr_top_data):
 def task():
     """执行任务"""
     # 联系人
-    # contact_name = 'ghost'
     # contact_name = '东升的太阳'
+    # contact_name = 'ghost'
     contact_name = '菲时报'
 
     # 截图名称
@@ -556,7 +564,7 @@ def main():
                 print(f'历史排行榜文件已切割完成 {top_data_file_bak}')
 
         # 月初第一天，更新下历史最高段位排行榜
-        if date_time_day == 1 and date_time_minute < 10:
+        if date_time_day == 1 and date_time_minute < 5:
             update_history_top()
 
         # 判断是否到执行任务的时间，是则继续，否则继续等待；第一执行任务时不需要检查时间
