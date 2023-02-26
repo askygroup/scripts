@@ -56,10 +56,9 @@ def open_battleofballs():
                     print('球球大作战已打开，但排行榜图标未正常显示，继续尝试')
                     time.sleep(2)  # 等待游戏启动
                     pyautogui.press('x', presses=8, interval=0.3)  # 连续点击8次自定义键X，关闭游戏启动后的所有弹窗
-
                 else:
                     print('排行榜图标未正常显示，球球大作战无法正常使用，需要重启模拟器')
-                    close_battleofballs()  # 关闭球球大作战应用
+                    close_program(ldmnq_exe)  # 关闭球球大作战应用
                     open_battleofballs()  # 打开球球大作战应用
                     max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
@@ -79,13 +78,16 @@ def open_battleofballs():
         open_battleofballs()  # 未找到雷电模拟器应用图标，需要重新调用 open_battleofballs() 函数
 
 
-def close_battleofballs():
-    """关闭雷电模拟器和球球大作战"""
-    ldmnq_exe = 'dnplayer.exe'
-    # 关闭模拟器应用
-    os.system(f'taskkill /F /IM {ldmnq_exe}')
-    print(f'模拟器已关闭 {ldmnq_exe}')
-    time.sleep(5)
+def close_program(program):
+    """关闭应用程序"""
+    if program:
+        # 关闭应用程序
+        os.system(f'taskkill /F /IM {program}')
+        print(f'{program} 应用程序已关闭')
+        time.sleep(5)
+    else:
+        print(f'应用程序可执行文件 {program} 为空，请确认！！！')
+        exit(1)
 
 
 def look_history_top():
@@ -127,7 +129,7 @@ def look_history_top():
             else:
                 # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
                 print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启模拟器')
-                close_battleofballs()  # 关闭球球大作战应用
+                close_program(ldmnq_exe)  # 关闭球球大作战应用
                 open_battleofballs()  # 打开球球大作战应用
                 max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 look_history_top()  # 重新调用 look_history_top() 函数
@@ -177,7 +179,7 @@ def look_top():
             else:
                 # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
                 print('大赛季页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启模拟器')
-                close_battleofballs()  # 关闭球球大作战应用
+                close_program(ldmnq_exe)  # 关闭球球大作战应用
                 open_battleofballs()  # 打开球球大作战应用
                 max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 look_top()  # 重新调用 look_top() 函数
@@ -596,6 +598,7 @@ if __name__ == '__main__':
     files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
     top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
 
+    ldmnq_exe = 'dnplayer.exe'  # 雷电模拟器应用程序可执行文件
     max_retry_count = 5  # 最大可重试次数
 
     main()  # 主函数
