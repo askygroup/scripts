@@ -14,6 +14,7 @@ import json
 import math
 import win32api
 from wechat_win10 import *
+from online_doc_win10 import *
 
 
 def open_battleofballs():
@@ -29,7 +30,7 @@ def open_battleofballs():
     # pyautogui.hotkey('win', 'q')  # 打开"Windows 搜索"菜单
     pyautogui.hotkey('win', 's')  # 打开"Windows 搜索"菜单
     time.sleep(0.5)
-    print(f'搜索雷电模拟器应用')
+    print('搜索雷电模拟器应用')
     write('雷电模拟器')
     time.sleep(0.5)
     ldmnq_image = 'images/ldmnq-win10.png'  # 雷电模拟器应用
@@ -59,7 +60,6 @@ def open_battleofballs():
                 else:
                     print('排行榜图标未正常显示，球球大作战无法正常使用，需要重启模拟器')
                     close_program(ldmnq_exe)  # 关闭球球大作战应用
-                    open_battleofballs()  # 打开球球大作战应用
                     max_retry_count = 5  # 球球大作战重新打开后，重置最大可重试次数
                 open_battleofballs()  # 球球大作战排行榜图标未正常显示，需要重新调用 open_battleofballs() 函数
         else:
@@ -310,10 +310,10 @@ def generate_message(ocr_top_data):
     def new_top_message():
         """生成最新段位排行榜信息"""
         nonlocal top_data, ocr_top_data, message, current_ft_date_time
-        long_name_length = len(max([k for k in ocr_top_data], key=lambda name: len(name))) + 2  # 最长用户名的长度加2
+        long_name_length = len(max([k for k in ocr_top_data], key=lambda name: len(name))) + 1
         sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
         message += '\n最新段位排行榜：\n'
-        message += '{:<4}{}{:<6}{:>4}\n'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '日新增(近)')
+        message += '{:<4}{}{:<6}{:>4}\n'.format('排名', '用户名' + sep * (long_name_length - len('用户名')), '段位', '日新增(最近)')
         # 加入排行榜信息
         count = 1
         for key, value in ocr_top_data.items():
@@ -396,8 +396,8 @@ def generate_message(ocr_top_data):
                     today_target_stars = math.ceil(today_target_stars)
                     hour_average_stars = math.ceil(hour_average_stars)
                     day_average_stars = math.ceil(day_average_stars)
-                    message += '{:<5}{:<10}{}\n'.format('总目标', '日目标(时)', '日平均(时)')
-                    message += '{:<9}{}({}){:>9}({})\n'.format(int(history_top_stars) + 1, today_target_stars, hour_target_stars, day_average_stars, hour_average_stars)
+                    message += '{:<5}{:<9}{}\n'.format('总目标', '日目标(时)', '日平均(时)')
+                    message += '{:<8}{}({}){:>8}({})\n'.format(int(history_top_stars) + 1, today_target_stars, hour_target_stars, day_average_stars, hour_average_stars)
 
                     # 距离历史最高还差多少颗星星
                     remain_stars = int(history_top_stars) - int(first_stars) + 1
@@ -419,8 +419,8 @@ def generate_message(ocr_top_data):
                     # 预计剩余天数每小时需要升级的星星数量
                     remain_hour_average_stars = math.ceil(remain_day_average_stars / one_day_hours)
                     remain_day_average_stars = math.ceil(remain_day_average_stars)
-                    message += '{:<5}{:<10}{}\n'.format('总差距', '日差距(时)', '日需平均(时)')
-                    message += '{:<9}{}({}){:>9}({})\n'.format(remain_stars, today_remain_stars, hour_remain_stars, remain_day_average_stars, remain_hour_average_stars)
+                    message += '{:<5}{:<9}{}\n'.format('总差距', '日差距(时)', '日需平均(时)')
+                    message += '{:<8}{}({}){:>8}({})\n'.format(remain_stars, today_remain_stars, hour_remain_stars, remain_day_average_stars, remain_hour_average_stars)
                 else:
                     message += f'当前段位排行榜第一名段位较低 {first_stars}，超神以下暂不计算\n'
 
@@ -450,9 +450,10 @@ def generate_message(ocr_top_data):
                     day_stars[hour_ft_date_time.split(':')[0]] = hour_history_stars
                 # 分钟数小于5时，只统计前一小时数据
                 if datetime.datetime.now().minute < 5:
-                    day_stars['{} {:>2}'.format(current_ft_date_time.split()[0], current_hour)] = first_stars  # 当前时间段位数据
+                    current_hour = current_hour
                 else:
-                    day_stars['{} {:>2}'.format(current_ft_date_time.split()[0], current_hour + 1)] = first_stars  # 当前时间段位数据
+                    current_hour = current_hour + 1
+                day_stars['{} {:0>2}'.format(current_ft_date_time.split()[0], current_hour)] = first_stars  # 当前时间段位数据
                 print(f'{first_name} 当日每小时段位历史数据：{day_stars}')
                 # 统计当日段位升级效率
                 cache_hour = [k for k in day_stars][0]  # 当天的第一条历史数据的时间
@@ -472,12 +473,11 @@ def generate_message(ocr_top_data):
                     cache_stars = stars
                 print(f'{first_name} 当日每小时段位升级效率：{count_stars}')
                 # 生成当日段位升级效率统计信息
-                current_hour = current_hour - 1 if current_hour == 24 else current_hour
-                for i in range(0, current_hour + 1, 4):
+                for i in range(0, current_hour, 4):
                     tmp_count_stars = count_stars[i:i + 4]
                     sum_stars = sum([int(i) for i in tmp_count_stars if i.isdigit()])
                     tmp_count_stars = ['{:>2}'.format(i) for i in tmp_count_stars]
-                    message += '{:0>2}-{:0>2}(共计{:>2})：{}\n'.format(str(i), str(i + 4), sum_stars, ' '.join(tmp_count_stars))
+                    message += '{:0>2}-{:0>2}(共计{:>2})：{}\n'.format(str(i), str(i + 3), sum_stars, ' '.join(tmp_count_stars))
 
     # 判断是否存在排行榜历史数据文件，有就读取历史数据文件，没有则将历史数据设置为一个空字典
     if top_data_file.is_file():
@@ -511,6 +511,43 @@ def generate_message(ocr_top_data):
     return message
 
 
+def update_excel(doc, url, ocr_top_data):
+    """下载在线文档表格，生成本地文档表格，更新在线文档表格"""
+    # 下载在线文档表格
+    open_url(url)  # 打开在线文档
+    download_online_doc()  # 下载在线文档
+    # 查找下载的文档
+    # 如果循环被 break 终止，说明文件下载成功；如果循环正常执行结束，说明文件下载失败，报错退出
+    for i in range(max_retry_count):
+        tmp_doc_list = list(downloads_dir.glob(f'菲时报*.xlsx'))
+        if tmp_doc_list:
+            if len(tmp_doc_list) == 1:
+                tmp_doc = tmp_doc_list[0]
+            else:
+                tmp_doc_list.sort(key=lambda f: os.path.getmtime(f))  # 按文件最后修改时间排序，从旧到新
+                tmp_doc = tmp_doc_list[-1]
+            shutil.move(tmp_doc, doc)
+            time.sleep(1)
+            print(f'已将下载的在线文档 {tmp_doc} 移动到当前工作目录 {current_dir}')
+            break
+        else:
+            time.sleep(2)  # 等待文件下载
+    else:
+        print(f'下载目录 {downloads_dir} 未找到下载的在线文档，文件下载超时，请确认！！！')
+        exit(1)
+
+    # 生成本地文档表格
+    generate_excel(doc, ocr_top_data)
+
+    # 更新在线文档表格
+    open_doc(doc)  # 打开本地文档
+    upload_online_doc()  # 更新在线文档
+
+    # 关闭WPS和浏览器应用
+    close_program(wps_exe)  # 关闭WPS应用
+    close_program(browser_exe)  # 关闭浏览器应用
+
+
 def task():
     """执行任务"""
     # 联系人
@@ -520,6 +557,9 @@ def task():
 
     # 截图名称
     screenshot_image = files_dir.joinpath(f"screenshot_{datetime.datetime.now().strftime('%F_%H-%M-%S')}.png")
+
+    doc_file = '最新菲时报.xlsx'  # 本地文档
+    online_doc_url = 'https://www.kdocs.cn/l/cns5PSA1gu0Z'  # 在线文档网站
 
     # 执行任务
     # 查看大赛季段位排行榜
@@ -540,6 +580,8 @@ def task():
     search_contact(contact_name)  # 搜索联系人
     send_message(message_content, 'text')  # 发送文字消息
     send_message(screenshot_image, 'image')  # 发送图片消息
+    # 更新在线文档表格
+    update_excel(doc_file, online_doc_url, ocr_result)
 
 
 def main():
@@ -597,8 +639,11 @@ if __name__ == '__main__':
     files_dir = current_dir.joinpath('screenshots')  # 截图文件存放目录
     files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
     top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
+    downloads_dir = current_dir.joinpath('C:/Users/admin/Downloads/')  # 系统下载目录
 
     ldmnq_exe = 'dnplayer.exe'  # 雷电模拟器应用程序可执行文件
+    wps_exe = 'wps.exe'  # WPS应用程序可执行文件
+    browser_exe = 'msedge.exe'  # 浏览器应用程序可执行文件
     max_retry_count = 5  # 最大可重试次数
 
     main()  # 主函数

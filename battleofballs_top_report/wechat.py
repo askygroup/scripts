@@ -15,6 +15,11 @@ def center_lower(coords):
     return coords[0] + int(coords[2] / 2), coords[1] + coords[3]
 
 
+def center_upper(coords):
+    """计算中上部的坐标"""
+    return coords[0] + int(coords[2] / 2), coords[1]
+
+
 def left_lower(coords):
     """计算左下角的坐标"""
     return coords[0], coords[1] + coords[3]
@@ -94,7 +99,7 @@ def open_wechat():
     if wechat_location:
         print('打开微信')
         pyautogui.moveTo(wechat_location, duration=0.5)
-        pyautogui.click(clicks=1)
+        pyautogui.click()
         time.sleep(2)  # 等待微信启动
 
         wechat_window_image = 'images/wechat_window.png'  # 微信窗口

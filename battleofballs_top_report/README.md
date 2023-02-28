@@ -15,6 +15,7 @@
 |Pillow|截图功能|
 |opencv-python|定位功能|
 |easyocr|OCR 识别功能|
+|openpyxl|更新Excel|
 |||
 
 |软件|描述|
@@ -61,6 +62,8 @@
 |---|---|
 |wechat.py|自动给微信群发送播报消息|
 |wechat_win10.py|自动给微信群发送播报消息，Windows 10 系统专用版本|
+|online_doc.py|自动更新在线文档|
+|online_doc.py|自动更新在线文档，Windows 10 系统专用版本|
 |||
 
 
