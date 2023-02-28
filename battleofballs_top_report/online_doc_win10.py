@@ -35,7 +35,7 @@ def open_url(url):
             print(f'输入网址 【{url}】')
             write(url)
             pyautogui.press('enter')
-            time.sleep(5)
+            time.sleep(10)
             online_doc_menu_image = 'images/online_doc_menu-win10.png'
             online_doc_menu_location = pyautogui.locateCenterOnScreen(online_doc_menu_image, confidence=0.85, minSearchTime=2)
             if online_doc_menu_location:
@@ -153,7 +153,7 @@ def upload_online_doc():
             print('打开在线文档')
             pyautogui.moveTo(wps_online_doc_location, duration=0.5)
             pyautogui.click(clicks=2)  # 双击鼠标左键
-            time.sleep(2)
+            time.sleep(5)
             wps_home_location = pyautogui.locateCenterOnScreen(wps_home_image, confidence=0.85, minSearchTime=2)
             if wps_home_location:
                 print('在线文档已打开')

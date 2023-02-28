@@ -531,7 +531,7 @@ def update_excel(doc, url, ocr_top_data):
             print(f'已将下载的在线文档 {tmp_doc} 移动到当前工作目录 {current_dir}')
             break
         else:
-            time.sleep(2)  # 等待文件下载
+            time.sleep(5)  # 等待文件下载
     else:
         print(f'下载目录 {downloads_dir} 未找到下载的在线文档，文件下载超时，请确认！！！')
         exit(1)

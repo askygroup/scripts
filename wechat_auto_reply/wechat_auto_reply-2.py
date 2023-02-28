@@ -91,7 +91,7 @@ def open_wechat():
     if wechat_location:
         print('打开微信')
         pyautogui.moveTo(wechat_location, duration=0.5)
-        pyautogui.click(clicks=1)
+        pyautogui.click()
         time.sleep(2)  # 等待微信启动
 
         wechat_window_image = 'images/wechat_window.png'  # 微信窗口
