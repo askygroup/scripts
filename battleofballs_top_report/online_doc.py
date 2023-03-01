@@ -35,17 +35,20 @@ def open_url(url):
             print(f'输入网址 【{url}】')
             write(url)
             pyautogui.press('enter')
-            time.sleep(10)
-            online_doc_menu_image = 'images/online_doc_menu.png'
-            online_doc_menu_location = pyautogui.locateCenterOnScreen(online_doc_menu_image, confidence=0.85, minSearchTime=2)
-            if online_doc_menu_location:
-                print(f'网站已打开 【{url}】')
-            else:
-                print('网站打开失败，继续尝试')
-                open_url(url)  # 需要重新调用 open_url() 函数
+            # 等待页面加载，等待20秒后还未加载完成则重新打开浏览器
+            for i in range(20):
+                time.sleep(1)
+                online_doc_menu_image = 'images/online_doc_menu.png'
+                online_doc_menu_location = pyautogui.locateCenterOnScreen(online_doc_menu_image, confidence=0.85, minSearchTime=2)
+                if online_doc_menu_location:
+                    print(f'网站已打开 【{url}】')
+                    break
+                elif i >= 20:
+                    print('网站打开超时，继续尝试')
+                    open_url(url)  # 需要重新调用 open_url() 函数
         else:
-            print(f'浏览器打开失败，未找到图标 【{browser_image}】')
-            exit(1)
+            print(f'浏览器打开失败，未找到应用图标，继续尝试')
+            open_url(url)  # 需要重新调用 open_url() 函数
     else:
         print('网站打开失败，网址为空')
         exit(1)
@@ -59,7 +62,7 @@ def download_online_doc():
         print('打开在线文档菜单')
         pyautogui.moveTo(online_doc_menu_location, duration=0.5)
         pyautogui.click()
-        time.sleep(1)
+        time.sleep(2)
         online_doc_download_image = 'images/online_doc_download.png'
         online_doc_download_location = pyautogui.locateCenterOnScreen(online_doc_download_image, confidence=0.85, minSearchTime=2)
         if online_doc_download_location:
@@ -69,8 +72,8 @@ def download_online_doc():
             time.sleep(2)
             print('在线文档下载完成')
         else:
-            print(f'在线文档下载失败，未找到下载图标 【{online_doc_download_image}】')
-            exit(1)
+            print(f'在线文档下载失败，未找到下载图标，继续尝试')
+            download_online_doc()
     else:
         print(f'在线文档菜单打开失败，未找到菜单图标 【{online_doc_menu_image}】')
         exit(1)
@@ -126,18 +129,21 @@ def open_doc(doc):
     if doc:
         # 打开本地文档
         win32api.ShellExecute(0, 'open', doc, '', '', 1)
-        time.sleep(2)
-        wps_home_image = 'images/wps_home.png'
-        wps_home_location = pyautogui.locateCenterOnScreen(wps_home_image, confidence=0.85, minSearchTime=2)
-        if wps_home_location:
-            print(f'本地文档已打开 【{doc}】')
-            pyautogui.hotkey('ctrl', 'a')  # 全选本地文档内容
-            pyautogui.hotkey('ctrl', 'c')  # 复制文档内容
+        # 等待WPS加载，等待20秒后还未加载完成则重新尝试
+        for i in range(20):
             time.sleep(1)
-            print(f'本地文档已复制')
-        else:
-            print('本地文档未正常打开，继续尝试')
-            open_doc(doc)  # 需要重新调用 open_doc() 函数
+            wps_home_image = 'images/wps_home.png'
+            wps_home_location = pyautogui.locateCenterOnScreen(wps_home_image, confidence=0.85, minSearchTime=2)
+            if wps_home_location:
+                print(f'本地文档已打开 【{doc}】')
+                pyautogui.hotkey('ctrl', 'a')  # 全选本地文档内容
+                pyautogui.hotkey('ctrl', 'c')  # 复制文档内容
+                time.sleep(1)
+                print(f'本地文档已复制')
+                break
+            elif i >= 20:
+                print('本地文档未正常打开，继续尝试')
+                open_doc(doc)  # 需要重新调用 open_doc() 函数
     else:
         print(f'本地文档 {doc} 为空，请确认！！！')
         exit(1)
@@ -159,20 +165,23 @@ def upload_online_doc():
             print('打开在线文档')
             pyautogui.moveTo(wps_online_doc_location, duration=0.5)
             pyautogui.click(clicks=2)  # 双击鼠标左键
-            time.sleep(5)
-            wps_home_location = pyautogui.locateCenterOnScreen(wps_home_image, confidence=0.85, minSearchTime=2)
-            if wps_home_location:
-                print('在线文档已打开')
-                pyautogui.hotkey('ctrl', 'a')  # 全选在线文档内容
-                pyautogui.hotkey('ctrl', 'v')  # 粘贴覆盖文档内容
+            # 等待WPS加载，等待20秒后还未加载完成则重新尝试
+            for i in range(20):
                 time.sleep(1)
-                print('在线文档已粘贴覆盖')
-                pyautogui.hotkey('ctrl', 's')  # 保存文档内容，并更新在线文档
-                time.sleep(2)
-                print(f'在线文档已更新')
-            else:
-                print('在线文档未正常打开，继续尝试')
-                upload_online_doc()  # 需要重新调用 upload_online_doc() 函数
+                wps_home_location = pyautogui.locateCenterOnScreen(wps_home_image, confidence=0.85, minSearchTime=2)
+                if wps_home_location:
+                    print('在线文档已打开')
+                    pyautogui.hotkey('ctrl', 'a')  # 全选在线文档内容
+                    pyautogui.hotkey('ctrl', 'v')  # 粘贴覆盖文档内容
+                    time.sleep(1)
+                    print('在线文档已粘贴覆盖')
+                    pyautogui.hotkey('ctrl', 's')  # 保存文档内容，并更新在线文档
+                    time.sleep(2)
+                    print(f'在线文档已更新')
+                    break
+                elif i >= 20:
+                    print('在线文档未正常打开，继续尝试')
+                    upload_online_doc()  # 需要重新调用 upload_online_doc() 函数
         else:
             print('在线文档未找到，继续尝试')
             upload_online_doc()  # 需要重新调用 upload_online_doc() 函数

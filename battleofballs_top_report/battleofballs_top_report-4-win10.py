@@ -419,16 +419,18 @@ def generate_message(ocr_top_data):
 
                     # 距离历史最高还差多少颗星星
                     remain_stars = int(history_top_stars) - int(first_stars) + 1
-                    # 距离今日、今时目标还差多少颗星星
-                    if int(first_stars) < today_target_stars:
-                        today_remain_stars = today_target_stars - int(first_stars)
-                        hour_remain_stars = hour_target_stars - int(first_stars)
-                    elif int(first_stars) == today_target_stars:
+                    # 距离今日目标还差多少颗星星
+                    today_remain_stars = today_target_stars - int(first_stars)
+                    if today_remain_stars == 0:
                         today_remain_stars = '已达标'
+                    elif today_remain_stars < 0:
+                        today_remain_stars = f'超 {-today_remain_stars}'
+                    # 距离今时目标还差多少颗星星
+                    hour_remain_stars = hour_target_stars - int(first_stars)
+                    if hour_remain_stars == 0:
                         hour_remain_stars = '已达标'
-                    else:
-                        today_remain_stars = f'超 {-(today_target_stars - int(first_stars))}'
-                        hour_remain_stars = f'超 {-(hour_target_stars - int(first_stars))}'
+                    elif hour_remain_stars < 0:
+                        hour_remain_stars = f'超 {-hour_remain_stars}'
                     # 当月剩余天数(包含当天，当天按小时折算)
                     remain_days = current_month_days - datetime.date.today().day
                     remain_days += (one_day_hours - datetime.datetime.now().hour - 1) / one_day_hours
