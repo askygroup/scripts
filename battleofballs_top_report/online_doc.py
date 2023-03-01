@@ -6,7 +6,7 @@ import time
 import pyautogui
 import win32api
 import openpyxl
-from wechat import *
+from wechat import write, center_upper
 
 
 def open_url(url):
@@ -94,7 +94,13 @@ def generate_excel(excel, ocr_top_data):
 
     # 更新段位数据
     current_day = datetime.datetime.now().day  # 当前天数
+    # 凌晨0点分钟数小于5时，当前的数据应该是前一天的数据
+    if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 5:
+        current_day = datetime.datetime.now().day - 1  # 当前天数
     current_hour = datetime.datetime.now().hour  # 当前小时数
+    # 分钟数小于5时，段位数据应该是前一小时的数据
+    if datetime.datetime.now().minute < 5:
+        current_hour = current_hour - 1  # 当前小时数
     data_row = 2 + 2 * current_day  # 更新数据的行，表头有两行
     print(f'更新数据的行：{data_row}')
 

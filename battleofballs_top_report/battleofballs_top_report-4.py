@@ -125,7 +125,7 @@ def look_history_top():
             if max_retry_count:
                 max_retry_count -= 1  # 最大可重试次数-1
                 print('更多排名页面未正常打开，继续尝试')
-                look_top()  # 重新调用 look_top() 函数
+                look_history_top()  # 重新调用 look_top() 函数
             else:
                 # 兼容模拟器应用长时间使用会夯住，导致球球大作战应用无法点击使用的情况
                 print('更多排名页面未正常打开，模拟器已夯住，球球大作战无法点击使用，需要重启模拟器')
@@ -246,7 +246,7 @@ def ocr(image, box):
 
     # OCR 识别
     reader = easyocr.Reader(['ch_sim', 'en'])  # 识别中英文两种语言
-    result = reader.readtext(ocr_image, paragraph=True, x_ths=1.5, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
+    result = reader.readtext(ocr_image, paragraph=True, x_ths=2, detail=0)  # 将距离较近的文本合并成段落输出，只输出检测到的文本
     tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
     print(f'图像已识别，共耗时 {tmp_run_time} 秒，识别到的文本内容是：\n{result}')
 
@@ -290,7 +290,7 @@ def update_top_data(current_date, ocr_top_data):
 def update_history_top():
     """更新历史最高排行榜第一名"""
     current_month = datetime.datetime.now().strftime('%Y-%m')  # 当前月份 2023-02
-    print(f'{current_month}，更新历史最高段位排行榜')
+    print(f'{current_month} 更新历史最高段位排行榜')
     # 查看历史最高段位排行榜
     screenshot_image = files_dir.joinpath(f"screenshot_{current_month}.png")  # 截图名称
     open_battleofballs()  # 打开球球大作战
@@ -301,7 +301,7 @@ def update_history_top():
     ocr_box = (420, 240, 1310, 355)  # 排行榜第一名，识别用户名、段位
     ocr_result = ocr(screenshot_image, ocr_box)  # OCR 识别
     tmp_top_data = [[key, value] for key, value in ocr_result.items()]
-    print(f'历史最高排行榜第一名：{tmp_top_data[0][0]}，段位：{tmp_top_data[0][1]}\n')
+    print(f'历史最高排行榜第一名：{tmp_top_data[0][0]}，段位：{tmp_top_data[0][1]}')
     update_top_data(current_month, ocr_result)  # 更新排行榜历史数据文件
 
 
@@ -310,6 +310,11 @@ def generate_message(ocr_top_data):
     def new_top_message():
         """生成最新段位排行榜信息"""
         nonlocal top_data, ocr_top_data, message, current_ft_date_time
+
+        print('开始生成最新段位排行榜信息')
+        # 青铜3颗、白银4颗、黄金两段8颗、白金两段10颗、钻石前二段10颗，共计35颗；月初段位重置后最高为钻石二段满星
+        # 钻石第三段1+5颗(其中钻石二段满星到砖石三段直接有1颗星)、大师三段15颗、王者三段17颗(一段5颗、二三段6颗)，共计38颗
+        start_stars = 38  # 赛季重置后，超神以下需要升级的段位星星数
         long_name_length = len(max([k for k in ocr_top_data], key=lambda name: len(name))) + 1
         sep = '   '  # 一个中文字符的宽度对应三个空格的宽度
         message += '\n最新段位排行榜：\n'
@@ -323,7 +328,7 @@ def generate_message(ocr_top_data):
             if top_data:
                 history_ft_date_time = [k for k in top_data][-1]  # 最近一次的历史数据
                 history_stars = top_data[history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
-                day_history_data = [k for k in top_data if k.startswith(current_ft_date_time.split()[0])]  # 当日历史数据，凌晨00:10前获取的是前一天的数据
+                day_history_data = [k for k in top_data if k.startswith(current_ft_date_time.split()[0])]  # 当日历史数据，凌晨00:05前获取的是前一天的数据
                 if day_history_data:
                     day_history_ft_date_time = day_history_data[0]  # 用户当日的第一条历史数据
                     day_history_stars = top_data[day_history_ft_date_time].get(key, '')  # 如果未获取到历史数据则返回空字符串
@@ -349,9 +354,15 @@ def generate_message(ocr_top_data):
                 if day_history_stars.isdigit():
                     day_delta_stars = int(value) - int(day_history_stars)
                 elif day_history_stars:
-                    day_delta_stars = int(value)  # 历史段位不为空，是超神以下，用户当日新增星星数量等于当前星星数量
+                    day_delta_stars = int(value)  # 历史段位不为空，是超神以下或识别的段位有问题，用户新增星星数量等于当前星星数量
+                    # 月初第一天，用户当日新增星星数量等于当前星星数量，加上超神以下需要升级的段位星星数
+                    if current_ft_date_time.split()[0].split('-')[-1] == '01':
+                        day_delta_stars = int(value) + start_stars
                 else:
                     day_delta_stars = '-'  # 历史段位为空串，无数据，用户当日新增星星数量等于'-'
+                    # 月初第一天，用户当日新增星星数量等于当前星星数量，加上超神以下需要升级的段位星星数
+                    if current_ft_date_time.split()[0].split('-')[-1] == '01':
+                        day_delta_stars = int(value) + start_stars
             else:
                 delta_stars = '-'
                 day_delta_stars = '-'
@@ -362,6 +373,8 @@ def generate_message(ocr_top_data):
     def history_top_message():
         """生成历史最高段位排行榜信息"""
         nonlocal top_data, ocr_top_data, message
+
+        print('开始生成历史最高段位排行榜信息')
         # 判断是否有排行榜历史数据，有就获取历史最高段位(星星数量)
         current_month = datetime.datetime.now().strftime('%Y-%m')  # 当前月份 2023-02
         one_day_hours = 24  # 一天的小时数
@@ -385,14 +398,19 @@ def generate_message(ocr_top_data):
                     current_month_first_day = datetime.date.today().replace(day=1)
                     current_month_days = (next_month_first_day - current_month_first_day).days
                     # 平均每天需要升级的星星数量，超神以下的段位数暂不计算在内
-                    # 青铜3颗、白银4颗、黄金两段8颗，共计15颗；月初段位重置后最高为白金段位，白金以下暂不计算在内
-                    # 白金两段10颗、钻石三段15颗、大师三段15颗、王者三段17颗(一段5颗、二三段6颗)，共计57颗
                     day_average_stars = (int(history_top_stars) + 1) / current_month_days
                     hour_average_stars = day_average_stars / one_day_hours
                     # 今日目标星星数量
                     today_target_stars = day_average_stars * datetime.date.today().day
+                    # 凌晨0点分钟数小于5时，当前的数据应该是前一天的数据
+                    if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 5:
+                        today_target_stars = day_average_stars * (datetime.date.today().day - 1)
                     # 今时目标星星数量
-                    hour_target_stars = math.ceil(today_target_stars - (one_day_hours - datetime.datetime.now().hour - 1) * hour_average_stars)
+                    today_remain_hours = one_day_hours - datetime.datetime.now().hour - 1  # 今天剩余小时数
+                    # 分钟数小于5时，段位数据应该是前一小时的数据
+                    if datetime.datetime.now().minute < 5:
+                        today_remain_hours = one_day_hours - datetime.datetime.now().hour  # 今天剩余小时数
+                    hour_target_stars = math.ceil(today_target_stars - today_remain_hours * hour_average_stars)
                     today_target_stars = math.ceil(today_target_stars)
                     hour_average_stars = math.ceil(hour_average_stars)
                     day_average_stars = math.ceil(day_average_stars)
@@ -414,6 +432,8 @@ def generate_message(ocr_top_data):
                     # 当月剩余天数(包含当天，当天按小时折算)
                     remain_days = current_month_days - datetime.date.today().day
                     remain_days += (one_day_hours - datetime.datetime.now().hour - 1) / one_day_hours
+                    if remain_days < 1:  # 如果当月剩余天数小于1，将值赋值为1
+                        remain_days = 1
                     # 预计剩余天数每天需要升级的星星数量
                     remain_day_average_stars = remain_stars / remain_days
                     # 预计剩余天数每小时需要升级的星星数量
@@ -427,6 +447,8 @@ def generate_message(ocr_top_data):
     def count_stars_message():
         """生成当日段位升级效率统计信息"""
         nonlocal top_data, ocr_top_data, message, current_ft_date_time, current_hour
+
+        print('开始生成段位升级效率统计信息')
         t_top_data = [[key, value] for key, value in ocr_top_data.items()]
         first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
         print(f'当前段位排行榜第一名：{first_name}')
@@ -485,20 +507,23 @@ def generate_message(ocr_top_data):
             top_data = json.load(file)
     else:
         top_data = {}
+    print(f'历史数据长度：{len(top_data)}')
 
     # 生成信息内容
     message = f'【菲时报，为您播报】\n北京时间：{ft_date_time}\n'
-    # 凌晨0点会有特殊提醒消息
+    current_ft_date_time = ft_date_time
+    current_hour = datetime.datetime.now().hour
+    # 凌晨0点分钟数小于5时，会有特殊提醒消息，当前的数据应该是前一天的数据
     if datetime.datetime.now().hour == 0 and datetime.datetime.now().minute < 5:
         message += '\n新的一天开始喽，继续加油哦！\n'
         current_ft_date_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
         current_hour = 24
-    else:
-        current_ft_date_time = ft_date_time
-        current_hour = datetime.datetime.now().hour
 
     # 最新段位排行榜
     new_top_message()
+
+    # 打印在线文档表格网站
+    message += f'\n打手升级效率详见在线文档表格：\n{online_doc_url}\n'
 
     # 当日段位升级效率统计
     count_stars_message()
@@ -506,8 +531,7 @@ def generate_message(ocr_top_data):
     # 历史最高段位排行榜
     history_top_message()
 
-    print('新的信息内容已生成')
-    # print(message)
+    print(f'新的信息内容已生成：\n{message}')
     return message
 
 
@@ -558,8 +582,8 @@ def task():
     # 截图名称
     screenshot_image = files_dir.joinpath(f"screenshot_{datetime.datetime.now().strftime('%F_%H-%M-%S')}.png")
 
-    doc_file = '最新菲时报.xlsx'  # 本地文档
-    online_doc_url = 'https://www.kdocs.cn/l/cns5PSA1gu0Z'  # 在线文档网站
+    # 本地文档
+    doc_file = '最新菲时报.xlsx'
 
     # 执行任务
     # 查看大赛季段位排行榜
@@ -595,20 +619,21 @@ def main():
         date_time = datetime.datetime.now()  # 当前时间
         ft_date_time = date_time.strftime('%F %T')  # 2023-01-17 12:00:00
         tmp_start_time = date_time.timestamp()  # 任务开始执行时间
+        date_time_hour = date_time.hour  # 当前时间小时数
         date_time_minute = date_time.minute  # 当前时间分钟数
         date_time_day = date_time.day  # 当前时间天数
         last_month = (date_time.replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m')  # 上个月月份 2023-01
 
-        # 月初第一天，切割下历史排行榜文件
-        if date_time_day == 1:
+        # 月初第一天0时，切割下历史排行榜文件
+        if date_time_day == 1 and date_time_hour == 0 and date_time_minute < 5:
             top_data_file_bak = current_dir.joinpath(top_data_file.name.replace('.', f'-{last_month}.'))
             # 如果不存在上个月的文件，则切割；如果存在，则说明已经切割了
             if not top_data_file_bak.is_file():
                 shutil.move(top_data_file, top_data_file_bak)
-                print(f'历史排行榜文件已切割完成 {top_data_file_bak}')
+                print(f'{ft_date_time} 历史排行榜文件已切割完成 {top_data_file_bak}')
 
-        # 月初第一天，更新下历史最高段位排行榜
-        if date_time_day == 1 and date_time_minute < 5:
+        # 月初第一天0时，更新下历史最高段位排行榜
+        if date_time_day == 1 and date_time_hour == 0 and date_time_minute < 5:
             update_history_top()
 
         # 判断是否到执行任务的时间，是则继续，否则继续等待；第一执行任务时不需要检查时间
@@ -616,7 +641,7 @@ def main():
             if date_time_minute not in exec_task_time:
                 time.sleep(wait_time)  # 程序等待
                 continue  # 中断当前循环的当次执行，继续下一次循环
-        print(f"{ft_date_time} 第 {repost_count} 次执行播报")
+        print(f"\n{ft_date_time} 第 {repost_count} 次执行播报")
         task()  # 执行任务
         date_time = datetime.datetime.now()  # 当前时间
         date_time_second = date_time.second  # 当前时间秒钟数
@@ -641,9 +666,12 @@ if __name__ == '__main__':
     top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
     downloads_dir = current_dir.joinpath('C:/Users/ASUS/Downloads/')  # 系统下载目录
 
+    online_doc_url = 'https://www.kdocs.cn/l/cns5PSA1gu0Z'  # 在线文档网站
+
     ldmnq_exe = 'dnplayer.exe'  # 雷电模拟器应用程序可执行文件
     wps_exe = 'wps.exe'  # WPS应用程序可执行文件
     browser_exe = 'msedge.exe'  # 浏览器应用程序可执行文件
+
     max_retry_count = 5  # 最大可重试次数
 
     main()  # 主函数
