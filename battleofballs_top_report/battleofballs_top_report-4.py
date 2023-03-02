@@ -410,6 +410,8 @@ def generate_message(ocr_top_data):
                     # 分钟数小于5时，段位数据应该是前一小时的数据
                     if datetime.datetime.now().minute < 5:
                         today_remain_hours = one_day_hours - datetime.datetime.now().hour  # 今天剩余小时数
+                        if datetime.datetime.now().hour == 0:  # 如果是凌晨0点分钟数小于5时，今日剩余小时数为0
+                            today_remain_hours = 0
                     hour_target_stars = math.ceil(today_target_stars - today_remain_hours * hour_average_stars)
                     today_target_stars = math.ceil(today_target_stars)
                     hour_average_stars = math.ceil(hour_average_stars)
@@ -521,11 +523,11 @@ def generate_message(ocr_top_data):
         current_ft_date_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
         current_hour = 24
 
-    # 最新段位排行榜
-    new_top_message()
-
     # 打印在线文档表格网站
     message += f'\n打手升级效率详见在线文档表格：\n{online_doc_url}\n'
+
+    # 最新段位排行榜
+    new_top_message()
 
     # 当日段位升级效率统计
     count_stars_message()
@@ -573,6 +575,12 @@ def update_excel(doc, url, ocr_top_data):
     close_program(wps_exe)  # 关闭WPS应用
     close_program(browser_exe)  # 关闭浏览器应用
 
+    # 将生成的本地文档移动到文档存放目录
+    doc_file = docs_dir.joinpath(doc)
+    shutil.move(doc, doc_file)
+    time.sleep(1)
+    print(f'已将生成的本地文档 {doc} 移动到文档存放目录 {docs_dir}')
+
 
 def task():
     """执行任务"""
@@ -585,7 +593,7 @@ def task():
     screenshot_image = files_dir.joinpath(f"screenshot_{datetime.datetime.now().strftime('%F_%H-%M-%S')}.png")
 
     # 本地文档
-    doc_file = '最新菲时报.xlsx'
+    doc_file = f"最新菲时报_{datetime.datetime.now().strftime('%F_%H-%M-%S')}.xlsx"
 
     # 执行任务
     # 查看大赛季段位排行榜
@@ -606,6 +614,7 @@ def task():
     search_contact(contact_name)  # 搜索联系人
     send_message(message_content, 'text')  # 发送文字消息
     send_message(screenshot_image, 'image')  # 发送图片消息
+
     # 更新在线文档表格
     update_excel(doc_file, online_doc_url, ocr_result)
 
@@ -667,6 +676,8 @@ if __name__ == '__main__':
     files_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建截图文件存放目录
     top_data_file = current_dir.joinpath('top.json')  # 排行榜历史数据文件
     downloads_dir = current_dir.joinpath('C:/Users/ASUS/Downloads/')  # 系统下载目录
+    docs_dir = current_dir.joinpath('docs')  # 文档文件存放目录
+    docs_dir.mkdir(exist_ok=True)  # 如果目录不存在，创建文档文件存放目录
 
     online_doc_url = 'https://www.kdocs.cn/l/cns5PSA1gu0Z'  # 在线文档网站
 

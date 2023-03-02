@@ -176,7 +176,7 @@ def upload_online_doc():
                     time.sleep(1)
                     print('在线文档已粘贴覆盖')
                     pyautogui.hotkey('ctrl', 's')  # 保存文档内容，并更新在线文档
-                    time.sleep(2)
+                    time.sleep(5)
                     print(f'在线文档已更新')
                     break
                 elif i >= 20:
