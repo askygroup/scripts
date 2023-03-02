@@ -154,7 +154,7 @@ def upload_online_doc():
         wps_home_location = center_upper(wps_home_coords)  # 计算中下部的坐标
         pyautogui.moveTo(wps_home_location, duration=0.5)
         pyautogui.click()
-        time.sleep(1)
+        time.sleep(5)
         wps_online_doc_image = 'images/wps_online_doc.png'
         wps_online_doc_location = pyautogui.locateCenterOnScreen(wps_online_doc_image, confidence=0.85, minSearchTime=2)
         if wps_online_doc_location:
@@ -187,6 +187,7 @@ def upload_online_doc():
                     upload_online_doc()  # 需要重新调用 upload_online_doc() 函数
         else:
             print('在线文档未找到，继续尝试')
+            pyautogui.hotkey('ctrl', 'tab')  # 切换到本地文档窗口
             upload_online_doc()  # 需要重新调用 upload_online_doc() 函数
     else:
         print('WPS首页未正常显示，无法打开在线文档，请确认！！！')

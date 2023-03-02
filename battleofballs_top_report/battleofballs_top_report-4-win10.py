@@ -527,7 +527,7 @@ def generate_message(ocr_top_data):
     top_username_info = top_data.get('top_username')  # 获取本月冲榜用户名
     if top_username_info:
         top_username = list(top_username_info.values())
-        message += f"\n本月榜号：{'、'.join(top_username)}"
+        message += f"\n本月榜号：{'、'.join(top_username)}\n"
     message += f'打手升级效率信息详见在线文档表格：\n{online_doc_url}\n'
 
     # 最新段位排行榜
