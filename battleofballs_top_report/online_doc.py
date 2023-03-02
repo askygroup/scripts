@@ -136,10 +136,6 @@ def open_doc(doc):
             wps_home_location = pyautogui.locateCenterOnScreen(wps_home_image, confidence=0.85, minSearchTime=2)
             if wps_home_location:
                 print(f'本地文档已打开 【{doc}】')
-                pyautogui.hotkey('ctrl', 'a')  # 全选本地文档内容
-                pyautogui.hotkey('ctrl', 'c')  # 复制文档内容
-                time.sleep(1)
-                print(f'本地文档已复制')
                 break
             elif i >= 20:
                 print('本地文档未正常打开，继续尝试')
@@ -171,6 +167,13 @@ def upload_online_doc():
                 wps_home_location = pyautogui.locateCenterOnScreen(wps_home_image, confidence=0.85, minSearchTime=2)
                 if wps_home_location:
                     print('在线文档已打开')
+                    # 复制本地文档
+                    pyautogui.hotkey('ctrl', 'tab')  # 切换到本地文档窗口
+                    pyautogui.hotkey('ctrl', 'a')  # 全选本地文档内容
+                    pyautogui.hotkey('ctrl', 'c')  # 复制文档内容
+                    time.sleep(1)
+                    print(f'本地文档已复制')
+                    pyautogui.hotkey('ctrl', 'tab')  # 切换到在线文档窗口
                     pyautogui.hotkey('ctrl', 'a')  # 全选在线文档内容
                     pyautogui.hotkey('ctrl', 'v')  # 粘贴覆盖文档内容
                     time.sleep(1)

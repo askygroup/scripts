@@ -523,8 +523,12 @@ def generate_message(ocr_top_data):
         current_ft_date_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
         current_hour = 24
 
-    # 打印在线文档表格网站
-    message += f'\n打手升级效率详见在线文档表格：\n{online_doc_url}\n'
+    # 打印本月冲榜用户名和在线文档表格网站
+    top_username_info = top_data.get('top_username')  # 获取本月冲榜用户名
+    if top_username_info:
+        top_username = list(top_username_info.values())
+        message += f"\n本月榜号：{'、'.join(top_username)}"
+    message += f'打手升级效率信息详见在线文档表格：\n{online_doc_url}\n'
 
     # 最新段位排行榜
     new_top_message()
