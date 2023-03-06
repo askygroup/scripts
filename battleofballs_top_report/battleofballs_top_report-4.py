@@ -505,6 +505,35 @@ def generate_message(ocr_top_data):
                     tmp_count_stars = ['{:>2}'.format(i) for i in tmp_count_stars]
                     message += '{:0>2}-{:0>2}(共计{:>2})：{}\n'.format(str(i), str(i + 3), sum_stars, ' '.join(tmp_count_stars))
 
+    def info_message():
+        """生成本月赞助、本月榜号、当前打手名字、打手效率统计的在线表格网站等信息"""
+        nonlocal top_data, message, current_hour
+        # 打印本月赞助的小伙伴
+        print('开始生成本月赞助信息')
+        vip_info = top_data.get('vip')  # 获取本月赞助的小伙伴
+        if vip_info:
+            print(f'赞助信息：{vip_info}')
+            money = sum(vip_info.values())  # 赞助费列表
+            print(f'本月共收到赞助费：{round(money, 2)} 元')
+            vip = list(vip_info.keys())  # 小伙伴列表
+            message += '\n##### 贵宾观战席 #####\n'
+            message += '#\n'
+            vip_top = [f'#  {i}\n' for i in vip[:3]]  # 前三名
+            message += f"{''.join(vip_top)}"
+            message += '#\n'
+            if len(vip) > 3:
+                message += f"#    {'、'.join(vip[3:])}\n"  # 其他
+            message += '#####\n'
+
+        # 打印本月榜号和在线表格网站
+        print('开始生成本月榜号和在线表格网站')
+        top_username_info = top_data.get('top_username')  # 获取本月冲榜用户名
+        if top_username_info:
+            print(f'榜号信息：{top_username_info}')
+            top_username = list(top_username_info.values())
+            message += f"\n本月榜号：{'、'.join(top_username)}\n"
+        message += f'\n打手升级效率信息详见在线表格：\n{online_doc_url}\n'
+
     # 判断是否存在排行榜历史数据文件，有就读取历史数据文件，没有则将历史数据设置为一个空字典
     if top_data_file.is_file():
         with open(top_data_file, 'r', encoding='utf-8') as file:
@@ -523,12 +552,8 @@ def generate_message(ocr_top_data):
         current_ft_date_time = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%F %T')  # 昨天的日期时间
         current_hour = 24
 
-    # 打印本月冲榜用户名和在线文档表格网站
-    top_username_info = top_data.get('top_username')  # 获取本月冲榜用户名
-    if top_username_info:
-        top_username = list(top_username_info.values())
-        message += f"\n本月榜号：{'、'.join(top_username)}\n"
-    message += f'打手升级效率信息详见在线文档表格：\n{online_doc_url}\n'
+    # 本月赞助、本月榜号、当前打手名字、打手效率统计的在线表格网站等信息
+    info_message()
 
     # 最新段位排行榜
     new_top_message()
