@@ -507,7 +507,7 @@ def generate_message(ocr_top_data):
 
     def info_message():
         """生成本月赞助、本月榜号、当前打手名字、打手效率统计的在线表格网站等信息"""
-        nonlocal top_data, message, current_hour
+        nonlocal top_data, message
         # 打印本月赞助的小伙伴
         print('开始生成本月赞助信息')
         vip_info = top_data.get('vip')  # 获取本月赞助的小伙伴
@@ -516,7 +516,8 @@ def generate_message(ocr_top_data):
             money = sum(vip_info.values())  # 赞助费列表
             print(f'本月共收到赞助费：{round(money, 2)} 元')
             vip = list(vip_info.keys())  # 小伙伴列表
-            message += '\n##### 贵宾观战席 #####\n'
+            # message += '\n##### 贵宾观战席 #####\n'
+            message += '\n##### 电费赞助商 #####\n'
             message += '#\n'
             vip_top = [f'#  {i}\n' for i in vip[:3]]  # 前三名
             message += f"{''.join(vip_top)}"
@@ -672,13 +673,20 @@ def main():
                 shutil.move(top_data_file, top_data_file_bak)
                 print(f'{ft_date_time} 历史排行榜文件已切割完成 {top_data_file_bak}')
 
-        # 月初第一天0时，更新下历史最高段位排行榜
-        if date_time_day == 1 and date_time_hour == 0 and date_time_minute < 5:
+        # 月初第一天00:03，更新下历史最高段位排行榜
+        if date_time_day == 1 and date_time_hour == 0 and date_time_minute == 3:
             update_history_top()
 
         # 判断是否到执行任务的时间，是则继续，否则继续等待；第一执行任务时不需要检查时间
         if repost_count != 1:
-            if date_time_minute not in exec_task_time:
+            # 当月的最后一天
+            next_month_first_day = (datetime.date.today().replace(day=1) + datetime.timedelta(days=32)).replace(day=1)
+            current_month_first_day = datetime.date.today().replace(day=1)
+            current_month_last_day = (next_month_first_day - current_month_first_day).days
+            # 月底最后一天23:28，执行下任务，获取下月底数据
+            if date_time_day == current_month_last_day and date_time_hour == 23 and date_time_minute == 58:
+                print(f"\n{ft_date_time} 月底了，更新下月底数据")
+            elif date_time_minute not in exec_task_time:
                 time.sleep(wait_time)  # 程序等待
                 continue  # 中断当前循环的当次执行，继续下一次循环
         print(f"\n{ft_date_time} 第 {repost_count} 次执行播报")
