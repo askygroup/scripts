@@ -117,7 +117,7 @@ def look_history_top():
             if history_top_location:
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
                 print(f'历史最高段位排行榜已打开，共耗时 {tmp_run_time} 秒')
-                time.sleep(1)
+                time.sleep(2)
             else:
                 print('历史最高段位排行榜未正常打开，继续尝试')
                 look_history_top()  # 随机出现的榜页面未切换到历史最高段位排行榜，需要重新调用 look_history_top() 函数
@@ -167,7 +167,7 @@ def look_top():
             if level_location:
                 tmp_run_time = int(datetime.datetime.now().timestamp() - tmp_start_time)
                 print(f'大赛季段位排行榜已打开，共耗时 {tmp_run_time} 秒')
-                time.sleep(1)
+                time.sleep(2)
             else:
                 print('大赛季段位排行榜未正常打开，继续尝试')
                 look_top()  # 随机出现的榜页面未切换到大赛季段位排行榜，需要重新调用 look_top() 函数
@@ -375,6 +375,14 @@ def generate_message(ocr_top_data):
         nonlocal top_data, ocr_top_data, message
 
         print('开始生成历史最高段位排行榜信息')
+        top_username_info = top_data.get('top_username')  # 获取本月冲榜用户名
+        if top_username_info:
+            first_name = top_username_info.get('主号')  # 获取本月冲榜主号
+            if first_name:
+                first_stars = ocr_top_data.get(first_name)  # 冲榜主号段位
+        else:
+            first_name = ''
+
         # 判断是否有排行榜历史数据，有就获取历史最高段位(星星数量)
         current_month = datetime.datetime.now().strftime('%Y-%m')  # 当前月份 2023-02
         one_day_hours = 24  # 一天的小时数
@@ -384,10 +392,14 @@ def generate_message(ocr_top_data):
             if history_top:
                 tmp_top_data = [[key, value] for key, value in history_top.items()]
                 history_top_name, history_top_stars = tmp_top_data[0][0], tmp_top_data[0][1]  # 历史最高段位
-                t_top_data = [[key, value] for key, value in ocr_top_data.items()]
-                first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
+                # 判断是否存在主号信息，是统计主号，不是就统计当前段位第一名
+                if first_name and first_stars:
+                    print(f'冲榜主号：{first_name}，段位：{first_stars}')
+                else:
+                    t_top_data = [[key, value] for key, value in ocr_top_data.items()]
+                    first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
+                    print(f'当前段位排行榜第一名：{first_name}，段位：{first_stars}')
                 print(f'历史最高排行榜第一名：{history_top_name}，段位：{history_top_stars}')
-                print(f'当前段位排行榜第一名：{first_name}，段位：{first_stars}')
                 message += f'\n历史最高段位：\n'
                 # print(history_top_stars, first_stars)
 
@@ -453,15 +465,27 @@ def generate_message(ocr_top_data):
         nonlocal top_data, ocr_top_data, message, current_ft_date_time, current_hour
 
         print('开始生成段位升级效率统计信息')
-        t_top_data = [[key, value] for key, value in ocr_top_data.items()]
-        first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
-        print(f'当前段位排行榜第一名：{first_name}')
+        top_username_info = top_data.get('top_username')  # 获取本月冲榜用户名
+        if top_username_info:
+            first_name = top_username_info.get('主号')  # 获取本月冲榜主号
+            if first_name:
+                first_stars = ocr_top_data.get(first_name)  # 冲榜主号段位
+        else:
+            first_name = ''
+
+        # 判断是否存在主号信息，是统计主号，不是就统计当前段位第一名
+        if first_name and first_stars:
+            print(f'冲榜主号：{first_name}，段位：{first_stars}')
+        else:
+            t_top_data = [[key, value] for key, value in ocr_top_data.items()]
+            first_name, first_stars = t_top_data[0][0], t_top_data[0][1]  # 当前段位排行榜第一名
+            print(f'当前段位排行榜第一名：{first_name}，段位：{first_stars}')
         # 判断是否有排行榜历史数据，有就获取当日数据
         if top_data:
             day_history_data = [k for k in top_data if k.startswith(current_ft_date_time.split()[0])]  # 当日历史数据
             # print(day_history_data)
             if day_history_data:
-                message += f'\n段位升级效率统计：\n'
+                message += f'\n段位升级效率统计({first_name})：\n'
                 count_hours = ['{:0>2}'.format(i) for i in range(0, current_hour + 1)]
                 # 用户当日段位数据
                 day_stars = {}  # 星星数量
@@ -634,7 +658,8 @@ def task():
     # 裁切图像指定区域，只识别排行榜前三名
     # ocr_box = (100, 200, 1310, 570)  # 排行榜前三名，识别排名、用户名、段位
     # ocr_box = (420, 240, 1310, 570)  # 排行榜前三名，识别用户名、段位
-    ocr_box = (420, 240, 1310, 780)  # 排行榜前五名，识别用户名、段位
+    # ocr_box = (420, 240, 1310, 780)  # 排行榜前五名，识别用户名、段位
+    ocr_box = (420, 240, 1310, 980)  # 排行榜前七名，识别用户名、段位
     ocr_result = ocr(screenshot_image, ocr_box)  # OCR 识别
     message_content = generate_message(ocr_result)  # 生成信息内容
     update_top_data(ft_date_time, ocr_result)  # 更新排行榜历史数据文件
